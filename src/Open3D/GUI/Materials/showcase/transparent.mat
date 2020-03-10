@@ -1,0 +1,21 @@
+material {
+    name : transparent,
+    shadingModel : lit,
+    blending : transparent,
+    transparency : twoPassesOneSide,
+    doubleSided : true,
+    refractionMode : cubemap,
+
+    parameters : [
+        { type : float4,    name : baseColor }
+    ]
+}
+
+fragment {
+    void material(inout MaterialInputs material) {
+        prepareMaterial(material);
+        material.baseColor = materialParams.baseColor;
+        material.roughness = 0.0;
+        //material.clearCoat = 1.0;
+    }
+}

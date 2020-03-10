@@ -26,7 +26,7 @@ add_dependencies(GUI build_all_3rd_party_libs)
 
 # --- build resources ----
 file(GLOB GUI_RESOURCE_SOURCE_FILES ${CMAKE_CURRENT_SOURCE_DIR}/Resources/*)
-file(GLOB GUI_MATERIAL_SOURCE_FILES "Materials/*.mat")
+file(GLOB GUI_MATERIAL_SOURCE_FILES "Materials/*.mat" "Materials/showcase/*.mat")
 
 # copy GUI/Resources -> <output>/resources
 set(GUI_RESOURCE_DIR ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/resources)

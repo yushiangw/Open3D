@@ -306,6 +306,8 @@ struct GuiVisualizer::Impl {
                         .SetParameter("pointSize", materials.unlit.pointSize)
                         .Finish();
     }
+
+    void AddShowcase(Renderer& renderer, Scene& scene);
 };
 
 GuiVisualizer::GuiVisualizer(
@@ -679,7 +681,16 @@ GuiVisualizer::GuiVisualizer(
 
     AddChild(impl_->drawTime);
 
-    SetGeometry(geometries);  // also updates the camera
+    if (!geometries.empty()) {
+        scene->GetScene()->SetIndirectLight(lightSettings.hIbl);
+        scene->GetScene()->SetIndirectLightIntensity(kAmbientIntensity);
+
+        scene->GetScene()->SetSkybox({});
+
+        SetGeometry(geometries);  // also updates the camera
+    } else {
+        impl_->AddShowcase(GetRenderer(), *renderScene);
+    }
 }
 
 GuiVisualizer::~GuiVisualizer() {}
@@ -984,6 +995,182 @@ void GuiVisualizer::OnDragDropped(const char *path) {
         auto err = std::string("Error reading geometry file '") + path + "'";
         vis->ShowMessageBox("Error loading geometry", err.c_str());
     }
+}
+
+void GuiVisualizer::Impl::AddShowcase(Renderer &renderer, Scene &scene3d) {
+    const std::string resourcePath = gui::Application::GetInstance().GetResourcePath();
+
+    geometry::TriangleMesh plane;
+    {
+        const double kPlaneSize = 30.0;
+
+        plane.vertices_.resize(4);
+        plane.vertices_[0] = {-kPlaneSize/2.0, 0, kPlaneSize/2.0};
+        plane.vertices_[1] = {kPlaneSize/2.0, 0, kPlaneSize/2.0};
+        plane.vertices_[2] = {kPlaneSize/2.0, 0, -kPlaneSize/2.0};
+        plane.vertices_[3] = {-kPlaneSize/2.0, 0, -kPlaneSize/2.0};
+
+        plane.triangles_.resize(2);
+        plane.triangles_[0] = {0,3,1};
+        plane.triangles_[1] = {1,3,2};
+
+        const double kUVSize = 2;
+        plane.triangle_uvs_.resize(3*plane.triangles_.size());
+        plane.triangle_uvs_[0] = {0.0,kUVSize};
+        plane.triangle_uvs_[1] = {0.0,0.0};
+        plane.triangle_uvs_[2] = {kUVSize,kUVSize};
+        plane.triangle_uvs_[3] = {kUVSize,kUVSize};
+        plane.triangle_uvs_[4] = {0.0,0.0};
+        plane.triangle_uvs_[5] = {kUVSize,0.0};
+
+        plane.ComputeVertexNormals();
+    }
+
+    std::shared_ptr<geometry::TriangleMesh> sphere;
+    {
+        sphere = geometry::TriangleMesh::CreateSphere(1, 100);
+        sphere->ComputeVertexNormals();
+    }
+
+    geometry::TriangleMesh lantern;
+    {
+        std::string path = resourcePath + "/showcase/lantern.obj";
+        io::ReadTriangleMesh(path, lantern, true);
+    }
+
+    // First, we load our own ibl and skybox
+    {
+        const auto iblPath = resourcePath + "/showcase/ibl.ktx";
+        const auto hIbl = renderer.AddIndirectLight(ResourceLoadRequest(iblPath.data()));
+        scene3d.SetIndirectLight(hIbl);
+
+        const auto skyPath = resourcePath + "/showcase/sky.ktx";
+        const auto hSky = renderer.AddSkybox(ResourceLoadRequest(skyPath.data()));
+        scene3d.SetSkybox(hSky);
+    }
+
+    geometry::AxisAlignedBoundingBox bounds;
+    // Second, add plain on scene
+    {
+        const auto planeMatPath = resourcePath + "/showcase/plane.filamat";
+        const auto hPlaneMat = renderer.AddMaterial(ResourceLoadRequest(planeMatPath.data()));
+
+        const auto planeTexPath = resourcePath + "/showcase/plane_";
+        const auto hPlaneAlbedo = renderer.AddTexture(ResourceLoadRequest((planeTexPath + "color.png").data()));
+        const auto hPlaneAO = renderer.AddTexture(ResourceLoadRequest((planeTexPath + "ao.png").data()));
+        const auto hPlaneNormal = renderer.AddTexture(ResourceLoadRequest((planeTexPath + "normal.png").data()));
+        const auto hPlaneRoughness = renderer.AddTexture(ResourceLoadRequest((planeTexPath + "roughness.png").data()));
+
+        TextureSamplerParameters sampler = TextureSamplerParameters::Pretty();
+        sampler.wrapU = TextureSamplerParameters::WrapMode::Repeat;
+        sampler.wrapV = TextureSamplerParameters::WrapMode::Repeat;
+
+        const auto hPlaneMatInstance = renderer.ModifyMaterial(hPlaneMat)
+                .SetTexture("albedo", hPlaneAlbedo, sampler)
+                .SetTexture("ambientOcclusion", hPlaneAO, sampler)
+                .SetTexture("normalMap", hPlaneNormal, sampler)
+                .SetTexture("roughness", hPlaneRoughness, sampler)
+                .Finish();
+
+        const auto hPlane = scene3d.AddGeometry(plane, hPlaneMatInstance);
+        bounds += scene3d.GetEntityBoundingBox(hPlane);
+    }
+
+    const auto sphereMatPath = resourcePath + "/showcase/sphere.filamat";
+    const auto hSphereMat = renderer.AddMaterial(ResourceLoadRequest(sphereMatPath.data()));
+
+    // Then, first sphere, ceramic
+    {
+        const auto hSphereMatInstance = renderer.ModifyMaterial(hSphereMat)
+                .SetColor("baseColor", Eigen::Vector3f{0.48, 0.51, 0.31})
+                .SetParameter("metallic", 0.f)
+                .SetParameter("roughness", 0.5f)
+                .SetParameter("reflectance", 0.5f)
+                .SetParameter("clearCoat", 0.f)
+                .SetParameter("clearCoatRoughness", 0.0f)
+                .SetParameter("anisotropy", 0.f)
+                .Finish();
+
+        auto hSphere = scene3d.AddGeometry(*sphere, hSphereMatInstance);
+        auto t = scene3d.GetEntityTransform(hSphere);
+        t.translate(Eigen::Vector3f{4.f, 1.f, 0.f});
+        scene3d.SetEntityTransform(hSphere, t);
+
+        bounds += scene3d.GetEntityBoundingBox(hSphere);
+    }
+
+    // And second sphere, metal
+    {
+        const auto hSphereMatInstance = renderer.ModifyMaterial(hSphereMat)
+                .SetColor("baseColor", Eigen::Vector3f{0.97, 0.74, 0.62})
+                .SetParameter("metallic", 0.9f)
+                .SetParameter("roughness", 0.1f)
+                .SetParameter("reflectance", 0.5f)
+                .SetParameter("clearCoat", 0.f)
+                .SetParameter("clearCoatRoughness", 0.f)
+                .SetParameter("anisotropy", 0.5f)
+                .Finish();
+
+        auto hSphere = scene3d.AddGeometry(*sphere, hSphereMatInstance);
+        auto t = scene3d.GetEntityTransform(hSphere);
+        t.translate(Eigen::Vector3f{0.f, 1.f, 4.f});
+        scene3d.SetEntityTransform(hSphere, t);
+
+        bounds += scene3d.GetEntityBoundingBox(hSphere);
+    }
+
+    // And last sphere, transparent
+    {
+        const auto transparentMatPath = resourcePath + "/showcase/transparent.filamat";
+        const auto hTransparentMat = renderer.AddMaterial(ResourceLoadRequest(transparentMatPath.data()));
+
+        const auto hSphereMatInstance = renderer.ModifyMaterial(hTransparentMat)
+                .SetColor("baseColor", Eigen::Vector4f{0.f, 0.f, 0.f, 0.2})
+                .Finish();
+
+        auto hSphere = scene3d.AddGeometry(*sphere, hSphereMatInstance);
+        auto t = scene3d.GetEntityTransform(hSphere);
+        t.translate(Eigen::Vector3f{4.f, 1.f, 4.f});
+        scene3d.SetEntityTransform(hSphere, t);
+
+        bounds += scene3d.GetEntityBoundingBox(hSphere);
+    }
+
+    // Finally add a lantern to scene
+    {
+        const auto lanternMatPath = resourcePath + "/showcase/lantern.filamat";
+        const auto hLanternMat = renderer.AddMaterial(ResourceLoadRequest(lanternMatPath.data()));
+
+        const auto lanternTexPath = resourcePath + "/showcase/lantern_";
+        const auto hLanternAlbedo = renderer.AddTexture(ResourceLoadRequest((lanternTexPath + "color.jpg").data()));
+        const auto hLanternAO = renderer.AddTexture(ResourceLoadRequest((lanternTexPath + "ao.jpg").data()));
+        const auto hLanternNormal = renderer.AddTexture(ResourceLoadRequest((lanternTexPath + "normal.jpg").data()));
+        const auto hLanternRoughness = renderer.AddTexture(ResourceLoadRequest((lanternTexPath + "roughness.jpg").data()));
+        const auto hLanternMetallic = renderer.AddTexture(ResourceLoadRequest((lanternTexPath + "metallic.jpg").data()));
+
+        const TextureSamplerParameters sampler = TextureSamplerParameters::Pretty();
+
+        const auto hPlaneMatInstance = renderer.ModifyMaterial(hLanternMat)
+                .SetTexture("albedo", hLanternAlbedo, sampler)
+                .SetTexture("ambientOcclusion", hLanternAO, sampler)
+                .SetTexture("normalMap", hLanternNormal, sampler)
+                .SetTexture("roughness", hLanternRoughness, sampler)
+                .SetTexture("metallic", hLanternMetallic, sampler)
+                .Finish();
+
+        auto hLantern = scene3d.AddGeometry(lantern, hPlaneMatInstance);
+        auto t = scene3d.GetEntityTransform(hLantern);
+        t.scale(1.f/30.f);
+
+        auto lanternBounds = scene3d.GetEntityBoundingBox(hLantern);
+
+        t.translate(Eigen::Vector3f{0.f, lanternBounds.GetHalfExtent().cast<float>().y(), 0.f});
+        scene3d.SetEntityTransform(hLantern, t);
+
+        bounds += scene3d.GetEntityBoundingBox(hLantern);
+    }
+
+    scene->SetupCamera(60.0, bounds, bounds.GetCenter().cast<float>());
 }
 
 }  // namespace visualization

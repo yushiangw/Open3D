@@ -1,0 +1,2 @@
+plane textures - https://www.cgbookcase.com/textures/blue-tiles-01
+ibl and sky - https://hdrihaven.com/hdri/?c=urban&h=san_giuseppe_bridge
