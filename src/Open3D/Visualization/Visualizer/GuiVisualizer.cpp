@@ -1170,6 +1170,81 @@ void GuiVisualizer::Impl::AddShowcase(Renderer &renderer, Scene &scene3d) {
         bounds += scene3d.GetEntityBoundingBox(hLantern);
     }
 
+    {
+        geometry::TriangleMesh texturedSphere;
+        std::string path = resourcePath + "/sphere.obj";
+        io::ReadTriangleMesh(path, texturedSphere, true);
+
+        const auto pbrMatPath = resourcePath + "/pbr.filamat";
+        const auto hpbrMat = renderer.AddMaterial(ResourceLoadRequest(pbrMatPath.data()));
+
+        TextureSamplerParameters sampler = TextureSamplerParameters::Pretty();
+        sampler.wrapU = TextureSamplerParameters::WrapMode::Repeat;
+        sampler.wrapV = TextureSamplerParameters::WrapMode::Repeat;
+
+        struct MaterialDescriptor {
+            std::string albedoPath;
+            std::string aoPath;
+            std::string normalPath;
+            std::string roughnessPath;
+            std::string metallicPath;
+
+            Eigen::Vector3f pos;
+            float uvScale = 1.f;
+        };
+
+        std::array<MaterialDescriptor, 3> descriptors;
+        auto& wood = descriptors[0];
+        wood.albedoPath = resourcePath + "/wood_color.png";
+        wood.aoPath = resourcePath + "/wood_ao.png";
+        wood.normalPath = resourcePath + "/wood_normal.png";
+        wood.roughnessPath = resourcePath + "/wood_roughness.png";
+        wood.metallicPath = resourcePath + "/metallic.png";
+        wood.pos = {8.f,1.f,0.f};
+        wood.uvScale = 4.f;
+
+        auto& bronze = descriptors[1];
+        bronze.albedoPath = resourcePath + "/bronze_color.png";
+        bronze.aoPath = resourcePath + "/ao.png";
+        bronze.normalPath = resourcePath + "/bronze_normal.png";
+        bronze.roughnessPath = resourcePath + "/bronze_roughness.png";
+        bronze.metallicPath = resourcePath + "/bronze_metallic.png";
+        bronze.pos = {8.f,1.f,4.f};
+
+        auto& rock = descriptors[2];
+        rock.albedoPath = resourcePath + "/rock_color.png";
+        rock.aoPath = resourcePath + "/rock_ao.png";
+        rock.normalPath = resourcePath + "/rock_normal.png";
+        rock.roughnessPath = resourcePath + "/rock_roughness.png";
+        rock.metallicPath = resourcePath + "/metallic.png";
+        rock.pos = {8.f,1.f,8.f};
+        rock.uvScale = 6.f;
+
+        for (const auto& descriptor : descriptors) {
+            const auto hAlbedo = renderer.AddTexture(ResourceLoadRequest(descriptor.albedoPath.data()));
+            const auto hAO = renderer.AddTexture(ResourceLoadRequest(descriptor.aoPath.data()));
+            const auto hNormal = renderer.AddTexture(ResourceLoadRequest(descriptor.normalPath.data()));
+            const auto hRoughness = renderer.AddTexture(ResourceLoadRequest(descriptor.roughnessPath.data()));
+            const auto hMetallic = renderer.AddTexture(ResourceLoadRequest(descriptor.metallicPath.data()));
+
+            const auto hMatInstance = renderer.ModifyMaterial(hpbrMat)
+                    .SetTexture("albedo", hAlbedo, sampler)
+                    .SetTexture("ambientOcclusion", hAO, sampler)
+                    .SetTexture("normalMap", hNormal, sampler)
+                    .SetTexture("roughness", hRoughness, sampler)
+                    .SetTexture("metallic", hMetallic, sampler)
+                    .SetParameter("uv_scale", descriptor.uvScale)
+                    .Finish();
+
+            const auto hSphere = scene3d.AddGeometry(texturedSphere, hMatInstance);
+            auto t = scene3d.GetEntityTransform(hSphere);
+            t.translate(descriptor.pos);
+            scene3d.SetEntityTransform(hSphere, t);
+
+            bounds += scene3d.GetEntityBoundingBox(hSphere);
+        }
+    }
+
     scene->SetupCamera(60.0, bounds, bounds.GetCenter().cast<float>());
 }
 
