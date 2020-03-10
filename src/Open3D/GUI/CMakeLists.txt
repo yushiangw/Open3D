@@ -25,7 +25,7 @@ ShowAndAbortOnWarning(GUI)
 add_dependencies(GUI build_all_3rd_party_libs)
 
 # --- build resources ----
-file(GLOB GUI_RESOURCE_SOURCE_FILES ${CMAKE_CURRENT_SOURCE_DIR}/Resources/*)
+file(GLOB GUI_RESOURCE_SOURCE_FILES ${CMAKE_CURRENT_SOURCE_DIR}/Resources/*.* ${CMAKE_CURRENT_SOURCE_DIR}/Resources/showcase/*)
 file(GLOB GUI_MATERIAL_SOURCE_FILES "Materials/*.mat" "Materials/showcase/*.mat")
 
 # copy GUI/Resources -> <output>/resources

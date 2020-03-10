@@ -1034,17 +1034,17 @@ void GuiVisualizer::Impl::AddShowcase(Renderer &renderer, Scene &scene3d) {
 
     geometry::TriangleMesh lantern;
     {
-        std::string path = resourcePath + "/showcase/lantern.obj";
+        std::string path = resourcePath + "/lantern.obj";
         io::ReadTriangleMesh(path, lantern, true);
     }
 
     // First, we load our own ibl and skybox
     {
-        const auto iblPath = resourcePath + "/showcase/ibl.ktx";
+        const auto iblPath = resourcePath + "/ibl.ktx";
         const auto hIbl = renderer.AddIndirectLight(ResourceLoadRequest(iblPath.data()));
         scene3d.SetIndirectLight(hIbl);
 
-        const auto skyPath = resourcePath + "/showcase/sky.ktx";
+        const auto skyPath = resourcePath + "/sky.ktx";
         const auto hSky = renderer.AddSkybox(ResourceLoadRequest(skyPath.data()));
         scene3d.SetSkybox(hSky);
     }
@@ -1052,10 +1052,10 @@ void GuiVisualizer::Impl::AddShowcase(Renderer &renderer, Scene &scene3d) {
     geometry::AxisAlignedBoundingBox bounds;
     // Second, add plain on scene
     {
-        const auto planeMatPath = resourcePath + "/showcase/plane.filamat";
+        const auto planeMatPath = resourcePath + "/plane.filamat";
         const auto hPlaneMat = renderer.AddMaterial(ResourceLoadRequest(planeMatPath.data()));
 
-        const auto planeTexPath = resourcePath + "/showcase/plane_";
+        const auto planeTexPath = resourcePath + "/plane_";
         const auto hPlaneAlbedo = renderer.AddTexture(ResourceLoadRequest((planeTexPath + "color.png").data()));
         const auto hPlaneAO = renderer.AddTexture(ResourceLoadRequest((planeTexPath + "ao.png").data()));
         const auto hPlaneNormal = renderer.AddTexture(ResourceLoadRequest((planeTexPath + "normal.png").data()));
@@ -1076,7 +1076,7 @@ void GuiVisualizer::Impl::AddShowcase(Renderer &renderer, Scene &scene3d) {
         bounds += scene3d.GetEntityBoundingBox(hPlane);
     }
 
-    const auto sphereMatPath = resourcePath + "/showcase/sphere.filamat";
+    const auto sphereMatPath = resourcePath + "/sphere.filamat";
     const auto hSphereMat = renderer.AddMaterial(ResourceLoadRequest(sphereMatPath.data()));
 
     // Then, first sphere, ceramic
@@ -1121,7 +1121,7 @@ void GuiVisualizer::Impl::AddShowcase(Renderer &renderer, Scene &scene3d) {
 
     // And last sphere, transparent
     {
-        const auto transparentMatPath = resourcePath + "/showcase/transparent.filamat";
+        const auto transparentMatPath = resourcePath + "/transparent.filamat";
         const auto hTransparentMat = renderer.AddMaterial(ResourceLoadRequest(transparentMatPath.data()));
 
         const auto hSphereMatInstance = renderer.ModifyMaterial(hTransparentMat)
@@ -1138,10 +1138,10 @@ void GuiVisualizer::Impl::AddShowcase(Renderer &renderer, Scene &scene3d) {
 
     // Finally add a lantern to scene
     {
-        const auto lanternMatPath = resourcePath + "/showcase/lantern.filamat";
+        const auto lanternMatPath = resourcePath + "/lantern.filamat";
         const auto hLanternMat = renderer.AddMaterial(ResourceLoadRequest(lanternMatPath.data()));
 
-        const auto lanternTexPath = resourcePath + "/showcase/lantern_";
+        const auto lanternTexPath = resourcePath + "/lantern_";
         const auto hLanternAlbedo = renderer.AddTexture(ResourceLoadRequest((lanternTexPath + "color.jpg").data()));
         const auto hLanternAO = renderer.AddTexture(ResourceLoadRequest((lanternTexPath + "ao.jpg").data()));
         const auto hLanternNormal = renderer.AddTexture(ResourceLoadRequest((lanternTexPath + "normal.jpg").data()));
