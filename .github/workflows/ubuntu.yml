@@ -1,0 +1,38 @@
+name: Ubuntu CI
+
+on:
+  push:
+    branches:
+    - master
+  pull_request:
+    types: [opened, reopened, synchronize] # Rebuild on new pushes to PR
+
+jobs:
+  ubuntu:
+    runs-on: ubuntu-18.04
+    strategy:
+      fail-fast: false
+      matrix:
+        BUILD_DEPENDENCY_FROM_SOURCE: [ON, OFF]
+        BUILD_TENSORFLOW_OPS: [ON]
+        SHARED: [ON, OFF]
+    env:
+      BUILD_DEPENDENCY_FROM_SOURCE: ${{ matrix.BUILD_DEPENDENCY_FROM_SOURCE }}
+      BUILD_TENSORFLOW_OPS: ${{ matrix.BUILD_TENSORFLOW_OPS }}
+      SHARED: ${{ matrix.SHARED }}
+      NPROC: 2
+    steps:
+    - name: Checkout source code
+      uses: actions/checkout@v2
+      with:
+        submodules: true
+    - name: Set up Python version
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.5
+    - name: Install dependencies
+      run: |
+        ./util/scripts/setup-linux.sh
+    - name: Config and build
+      run: |
+        ./util/scripts/run-travis.sh
