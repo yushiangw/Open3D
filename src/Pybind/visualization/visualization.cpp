@@ -24,7 +24,7 @@
 // IN THE SOFTWARE.
 // ----------------------------------------------------------------------------
 
-#include "open3d_pybind/visualization/visualization.h"
+#include "Pybind/visualization/visualization.h"
 
 namespace open3d {
 

@@ -30,9 +30,9 @@
 #include "Open3D/Visualization/Visualizer/VisualizerWithKeyCallback.h"
 #include "Open3D/Visualization/Visualizer/VisualizerWithVertexSelection.h"
 
-#include "open3d_pybind/docstring.h"
-#include "open3d_pybind/visualization/visualization.h"
-#include "open3d_pybind/visualization/visualization_trampoline.h"
+#include "Pybind/docstring.h"
+#include "Pybind/visualization/visualization.h"
+#include "Pybind/visualization/visualization_trampoline.h"
 
 namespace open3d {
 

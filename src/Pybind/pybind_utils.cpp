@@ -24,14 +24,14 @@
 // IN THE SOFTWARE.
 // ----------------------------------------------------------------------------
 
-#include "open3d_pybind/pybind_utils.h"
+#include "Pybind/pybind_utils.h"
 
 #include <string>
 
 #include "Open3D/Core/Dtype.h"
 #include "Open3D/Core/Tensor.h"
 
-#include "open3d_pybind/open3d_pybind.h"
+#include "Pybind/open3d_pybind.h"
 
 namespace open3d {
 namespace pybind_utils {

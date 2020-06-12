@@ -24,9 +24,9 @@
 // IN THE SOFTWARE.
 // ----------------------------------------------------------------------------
 
-#include "open3d_pybind/core/container.h"
-#include "open3d_pybind/docstring.h"
-#include "open3d_pybind/open3d_pybind.h"
+#include "Pybind/core/container.h"
+#include "Pybind/docstring.h"
+#include "Pybind/open3d_pybind.h"
 
 #include "Open3D/Core/Dtype.h"
 

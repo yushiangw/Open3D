@@ -39,8 +39,8 @@
 #include "Open3D/IO/ClassIO/TriangleMeshIO.h"
 #include "Open3D/IO/ClassIO/VoxelGridIO.h"
 
-#include "open3d_pybind/docstring.h"
-#include "open3d_pybind/io/io.h"
+#include "Pybind/docstring.h"
+#include "Pybind/io/io.h"
 
 #ifdef BUILD_AZURE_KINECT
 #include "Open3D/IO/Sensor/AzureKinect/AzureKinectSensorConfig.h"

@@ -30,8 +30,8 @@
 #include "Open3D/Odometry/OdometryOption.h"
 #include "Open3D/Odometry/RGBDOdometryJacobian.h"
 
-#include "open3d_pybind/docstring.h"
-#include "open3d_pybind/odometry/odometry.h"
+#include "Pybind/docstring.h"
+#include "Pybind/odometry/odometry.h"
 
 namespace open3d {
 

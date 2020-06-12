@@ -27,9 +27,9 @@
 #include "Open3D/Visualization/Visualizer/ViewControl.h"
 #include "Open3D/IO/ClassIO/IJsonConvertibleIO.h"
 
-#include "open3d_pybind/docstring.h"
-#include "open3d_pybind/visualization/visualization.h"
-#include "open3d_pybind/visualization/visualization_trampoline.h"
+#include "Pybind/docstring.h"
+#include "Pybind/visualization/visualization.h"
+#include "Pybind/visualization/visualization_trampoline.h"
 
 namespace open3d {
 

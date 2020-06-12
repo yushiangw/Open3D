@@ -29,8 +29,8 @@
 #include "Open3D/Integration/TSDFVolume.h"
 #include "Open3D/Integration/UniformTSDFVolume.h"
 
-#include "open3d_pybind/docstring.h"
-#include "open3d_pybind/integration/integration.h"
+#include "Pybind/docstring.h"
+#include "Pybind/integration/integration.h"
 
 namespace open3d {
 

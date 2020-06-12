@@ -27,9 +27,9 @@
 #include "Open3D/Geometry/TetraMesh.h"
 #include "Open3D/Geometry/PointCloud.h"
 
-#include "open3d_pybind/docstring.h"
-#include "open3d_pybind/geometry/geometry.h"
-#include "open3d_pybind/geometry/geometry_trampoline.h"
+#include "Pybind/docstring.h"
+#include "Pybind/geometry/geometry.h"
+#include "Pybind/geometry/geometry_trampoline.h"
 
 namespace open3d {
 

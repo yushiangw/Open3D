@@ -27,8 +27,8 @@
 #include "Open3D/Camera/PinholeCameraIntrinsic.h"
 #include "Open3D/Camera/PinholeCameraTrajectory.h"
 
-#include "open3d_pybind/camera/camera.h"
-#include "open3d_pybind/docstring.h"
+#include "Pybind/camera/camera.h"
+#include "Pybind/docstring.h"
 
 namespace open3d {
 

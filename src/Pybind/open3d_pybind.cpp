@@ -24,23 +24,23 @@
 // IN THE SOFTWARE.
 // ----------------------------------------------------------------------------
 
-#include "open3d_pybind/open3d_pybind.h"
-#include "open3d_pybind/camera/camera.h"
-#include "open3d_pybind/color_map/color_map.h"
-#include "open3d_pybind/core/container.h"
-#include "open3d_pybind/geometry/geometry.h"
-#include "open3d_pybind/integration/integration.h"
-#include "open3d_pybind/io/io.h"
-#include "open3d_pybind/odometry/odometry.h"
-#include "open3d_pybind/registration/registration.h"
-#include "open3d_pybind/utility/utility.h"
-#include "open3d_pybind/visualization/visualization.h"
+#include "Pybind/open3d_pybind.h"
+#include "Pybind/camera/camera.h"
+#include "Pybind/color_map/color_map.h"
+#include "Pybind/core/container.h"
+#include "Pybind/geometry/geometry.h"
+#include "Pybind/integration/integration.h"
+#include "Pybind/io/io.h"
+#include "Pybind/odometry/odometry.h"
+#include "Pybind/registration/registration.h"
+#include "Pybind/utility/utility.h"
+#include "Pybind/visualization/visualization.h"
 
 #include "Open3D/Utility/Console.h"
 
 namespace open3d {
 
-PYBIND11_MODULE(open3d_pybind, m) {
+PYBIND11_MODULE(pybind, m) {
     open3d::utility::Logger::i().print_fcn_ = [](const std::string& msg) {
         py::print(msg);
     };

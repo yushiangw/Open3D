@@ -26,8 +26,8 @@
 
 #include "Open3D/Utility/Console.h"
 
-#include "open3d_pybind/docstring.h"
-#include "open3d_pybind/open3d_pybind.h"
+#include "Pybind/docstring.h"
+#include "Pybind/open3d_pybind.h"
 
 namespace open3d {
 

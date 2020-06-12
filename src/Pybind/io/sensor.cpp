@@ -30,8 +30,8 @@
 #include "Open3D/IO/Sensor/AzureKinect/AzureKinectSensorConfig.h"
 #include "Open3D/IO/Sensor/AzureKinect/MKVReader.h"
 
-#include "open3d_pybind/docstring.h"
-#include "open3d_pybind/io/io.h"
+#include "Pybind/docstring.h"
+#include "Pybind/io/io.h"
 
 namespace open3d {
 

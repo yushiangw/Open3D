@@ -24,7 +24,7 @@
 // IN THE SOFTWARE.
 // ----------------------------------------------------------------------------
 
-#include "open3d_pybind/core/container.h"
+#include "Pybind/core/container.h"
 
 #include "Open3D/Core/CUDAUtils.h"
 

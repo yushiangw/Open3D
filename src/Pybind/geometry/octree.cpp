@@ -31,10 +31,10 @@
 #include "Open3D/Geometry/PointCloud.h"
 #include "Open3D/Geometry/VoxelGrid.h"
 
-#include "open3d_pybind/docstring.h"
-#include "open3d_pybind/geometry/geometry.h"
-#include "open3d_pybind/geometry/geometry_trampoline.h"
-#include "open3d_pybind/geometry/octree.h"
+#include "Pybind/docstring.h"
+#include "Pybind/geometry/geometry.h"
+#include "Pybind/geometry/geometry_trampoline.h"
+#include "Pybind/geometry/octree.h"
 
 namespace open3d {
 

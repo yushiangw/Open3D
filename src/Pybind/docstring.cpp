@@ -33,7 +33,7 @@
 
 #include "Open3D/Utility/Console.h"
 #include "Open3D/Utility/Helper.h"
-#include "open3d_pybind/docstring.h"
+#include "Pybind/docstring.h"
 
 namespace open3d {
 namespace docstring {
@@ -283,8 +283,7 @@ std::string FunctionDoc::ToGoogleDocString() const {
 
 std::string FunctionDoc::NamespaceFix(const std::string& s) {
     std::string rc = std::regex_replace(s, std::regex("::"), ".");
-    rc = std::regex_replace(rc, std::regex("open3d\\.open3d_pybind\\."),
-                            "open3d.");
+    rc = std::regex_replace(rc, std::regex("open3d\\.pybind\\."), "open3d.");
     return rc;
 }
 

@@ -32,8 +32,8 @@
 #include "Open3D/Visualization/Utility/SelectionPolygonVolume.h"
 #include "Open3D/Visualization/Visualizer/Visualizer.h"
 
-#include "open3d_pybind/docstring.h"
-#include "open3d_pybind/visualization/visualization.h"
+#include "Pybind/docstring.h"
+#include "Pybind/visualization/visualization.h"
 
 namespace open3d {
 

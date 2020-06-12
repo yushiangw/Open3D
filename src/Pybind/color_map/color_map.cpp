@@ -30,8 +30,8 @@
 #include "Open3D/Geometry/TriangleMesh.h"
 #include "Open3D/Utility/Console.h"
 
-#include "open3d_pybind/color_map/color_map.h"
-#include "open3d_pybind/docstring.h"
+#include "Pybind/color_map/color_map.h"
+#include "Pybind/docstring.h"
 
 namespace open3d {
 
