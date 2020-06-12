@@ -30,13 +30,13 @@ execute_process(
 )
 message(STATUS "Using Python version major: ${PYTHON_VERSION_MAJOR}")
 
-set(PACKAGE_NAME open3d_pybind)
+set(PACKAGE_NAME pybind)
 
-file(GLOB_RECURSE PY_ALL_SOURCE_FILES "open3d_pybind/*.cpp")
+file(GLOB_RECURSE PY_ALL_SOURCE_FILES "*.cpp")
 
 if (NOT BUILD_AZURE_KINECT)
     list(REMOVE_ITEM PY_ALL_SOURCE_FILES
-        "${CMAKE_CURRENT_SOURCE_DIR}/open3d_pybind/io/sensor.cpp")
+        "${CMAKE_CURRENT_SOURCE_DIR}/io/sensor.cpp")
 endif()
 
 # NO_EXTRAS disables LTO which causes problems during link with nvcc 9.x
@@ -50,8 +50,9 @@ else ()
     )
 endif ()
 
+# Include with `#include "Pybind/geometry/xxx.h`
 target_include_directories(${PACKAGE_NAME} PRIVATE
-    ${CMAKE_CURRENT_SOURCE_DIR}
+    ${CMAKE_CURRENT_SOURCE_DIR}/..
 )
 
 # Suppress Pybind11 warnings
@@ -104,7 +105,7 @@ endif ()
 
 add_custom_target(python-package
     COMMAND ${CMAKE_COMMAND}
-            -DPYTHON_PACKAGE_SRC_DIR=${CMAKE_CURRENT_SOURCE_DIR}
+            -DPYTHON_PACKAGE_SRC_DIR=${CMAKE_PROJECT_DIR}/src/Python
             -DPYTHON_PACKAGE_DST_DIR=${PYTHON_PACKAGE_DST_DIR}
             -DPYTHON_VERSION=${PYTHON_VERSION}
             "-DCOMPILED_MODULE_PATH_LIST=${COMPILED_MODULE_PATH_LIST}"
