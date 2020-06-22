@@ -1,5 +1,6 @@
 # build
 file(GLOB_RECURSE ALL_SOURCE_FILES "*.cpp")
+list(FILTER ALL_SOURCE_FILES EXCLUDE REGEX Test.*.cpp)
 
 # create object library
 add_library(TGeometry OBJECT ${ALL_SOURCE_FILES})
