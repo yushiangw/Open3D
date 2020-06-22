@@ -170,6 +170,14 @@ PointCloud PointCloud::VoxelDownSample(
     timer.Stop();
     utility::LogInfo("[PointCloud] operator Div takes {}", timer.GetDuration());
 
+    auto points = point_dict_.find("points")->second.AsTensor();
+    std::cout << "[Open3D INFO] shape: " << points.GetShape().ToString()
+              << std::endl;
+    std::cout << "[Open3D INFO] strides: " << points.GetStrides().ToString()
+              << std::endl;
+    utility::LogInfo("dtype: {}", DtypeUtil::ToString(points.GetDtype()));
+    utility::LogInfo("device: {}", points.GetDevice().ToString());
+
     timer.Start();
     auto tensor_quantized_int64 = tensor_quantized.To(Dtype::Int64);
     timer.Stop();
