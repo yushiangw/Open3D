@@ -58,8 +58,9 @@ std::shared_ptr<Hashmap<Hash, KeyEq>> CreateHashmap(size_t init_buckets,
                                                     open3d::Device device) {
     static std::unordered_map<
             Device::DeviceType,
+            // Temp fix for compilation.
             std::function<std::shared_ptr<Hashmap<Hash, KeyEq>>(
-                    size_t, size_t, size_t, Device)>,
+                    size_t, size_t, size_t, size_t, Device)>,
             utility::hash_enum_class::hash>
             map_device_type_to_hashmap_constructor = {
                 {Device::DeviceType::CPU, CreateCPUHashmap<Hash, KeyEq>},
@@ -75,6 +76,7 @@ std::shared_ptr<Hashmap<Hash, KeyEq>> CreateHashmap(size_t init_buckets,
 
     auto constructor =
             map_device_type_to_hashmap_constructor.at(device.GetType());
-    return constructor(init_buckets, dsize_key, dsize_value, device);
+    // Temp fix for compilation.
+    return constructor(init_buckets, 0, dsize_key, dsize_value, device);
 }
 }  // namespace open3d
