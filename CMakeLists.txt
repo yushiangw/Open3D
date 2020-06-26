@@ -357,9 +357,9 @@ export(EXPORT ${PROJECT_NAME}Targets NAMESPACE ${PROJECT_NAME}::)
 
 # `make check-style` errors if styling is not compliant
 add_custom_target(check-style
-    COMMAND ${PYTHON_EXECUTABLE}
+    COMMAND python2
     ${CMAKE_CURRENT_SOURCE_DIR}/util/scripts/check_style.py
-    COMMENT "Python executable used for style check: ${PYTHON_EXECUTABLE}."
+    # COMMENT "Python executable used for style check: ${PYTHON_EXECUTABLE}."
 )
 
 # `make apply-style` runs clang-format to format all source code
