@@ -9,6 +9,10 @@ from functools import partial
 import time
 import sys
 
+pwd = os.path.dirname(os.path.abspath(__file__))
+sys.path.append(pwd)
+from check_cpp_style import _glob_files, _find_clang_format, CppFormatter
+
 PYTHON_FORMAT_DIRS = [
     "examples",
     "docs",
@@ -26,186 +30,33 @@ CPP_FORMAT_DIRS = [
     "docs/_static",
 ]
 
+# Yapf requires python 3.6+
+if not (sys.version_info.major == 3 and sys.version_info.minor >= 6):
+    raise RuntimeError(
+        "Python formatting requires Python 3.6+, currently using {}.{}.".format(
+            sys.version_info.major, sys.version_info.minor))
 
-def _import_python_format_libs():
-    # Yapf requires python 3.6+
-    if not (sys.version_info.major == 3 and sys.version_info.minor >= 6):
-        raise RuntimeError(
-            "Python formatting requires Python 3.6+, currently using {}.{}.".
-            format(sys.version_info.major, sys.version_info.minor))
+# Check and import yapf
+# > not found: throw exception
+# > version mismatch: throw exception
+try:
+    import yapf
+except:
+    raise ImportError(
+        "yapf not found. Install with `pip install yapf==0.28.0`.")
+if yapf.__version__ != "0.28.0":
+    raise RuntimeError(
+        "yapf 0.28.0 required. Install with `pip install yapf==0.28.0`.")
+print("Using yapf version {}".format(yapf.__version__))
 
-    # Check and import yapf
-    # > not found: throw exception
-    # > version mismatch: throw exception
-    try:
-        import yapf
-    except:
-        raise ImportError(
-            "yapf not found. Install with `pip install yapf==0.28.0`.")
-    if yapf.__version__ != "0.28.0":
-        raise RuntimeError(
-            "yapf 0.28.0 required. Install with `pip install yapf==0.28.0`.")
-    print("Using yapf version {}".format(yapf.__version__))
-
-    # Check and import nbformat
-    # > not found: throw exception
-    try:
-        import nbformat
-    except:
-        raise ImportError(
-            "nbformat not found. Install with `pip install nbformat`.")
-    print("Using nbformat version {}".format(nbformat.__version__))
-
-    return yapf, nbformat
-
-
-def _glob_files(open3d_root_dir, directories, extensions):
-    """
-    Find files with certain extensions in directories recursively.
-
-    Args:
-        open3d_root_dir: Open3D root directory
-        directories: list of directories, relative to open3d_root_dir.
-        extensions: list of extensions, e.g. ["cpp", "h"].
-
-    Return:
-        List of file paths.
-    """
-    file_paths = []
-    for directory in directories:
-        directory = Path(open3d_root_dir) / directory
-        for extension in extensions:
-            extension_regex = "*." + extension
-            file_paths.extend(directory.rglob(extension_regex))
-    file_paths = [str(file_path) for file_path in file_paths]
-    file_paths = sorted(list(set(file_paths)))
-    return file_paths
-
-
-def _glob_files_py2(open3d_root_dir, directories, extensions):
-    """
-    Find files with certain extensions in directories recursively.
-
-    Args:
-        open3d_root_dir: Open3D root directory
-        directories: list of directories, relative to open3d_root_dir.
-        extensions: list of extensions, e.g. ["cpp", "h"].
-
-    Return:
-        List of file paths.
-    """
-    file_paths = []
-    for directory in directories:
-        directory = os.path.join(open3d_root_dir, directory)
-        for extension in extensions:
-            extension_regex = "*." + extension
-            file_paths.extend(directory.rglob(extension_regex))
-    file_paths = [file_path for file_path in file_paths]
-    file_paths = sorted(list(set(file_paths)))
-    return file_paths
-
-
-def _find_clang_format():
-    # Find clang-format
-    # > not found: throw exception
-    # > version mismatch: print warning
-    clang_format_bin = shutil.which("clang-format-5.0")
-    if clang_format_bin is None:
-        clang_format_bin = shutil.which("clang-format")
-    if clang_format_bin is None:
-        raise RuntimeError(
-            "clang-format not found. "
-            "See http://www.open3d.org/docs/release/contribute.html#automated-style-checker "
-            "for help on clang-format installation.")
-    version_str = subprocess.check_output([clang_format_bin, "--version"
-                                          ]).decode("utf-8").strip()
-    try:
-        m = re.match("^clang-format version ([0-9.-]*) .*$", version_str)
-        if m:
-            version_str = m.group(1)
-            version_str_token = version_str.split(".")
-            major = int(version_str_token[0])
-            minor = int(version_str_token[1])
-            if major != 5 or minor != 0:
-                print("Warning: clang-format 5.0 required, but got {}.".format(
-                    version_str))
-        else:
-            raise
-    except:
-        print("Warning: failed to parse clang-format version {}".format(
-            version_str))
-        print("Please ensure clang-format 5.0 is used.")
-    print("Using clang-format version {}.".format(version_str))
-
-    return clang_format_bin
-
-
-class CppFormatter:
-
-    def __init__(self, file_paths, clang_format_bin):
-        self.file_paths = file_paths
-        self.clang_format_bin = clang_format_bin
-
-    @staticmethod
-    def _check_style(file_path, clang_format_bin):
-        """
-        Returns true if style is valid.
-        """
-        cmd = [
-            clang_format_bin,
-            "-style=file",
-            "-output-replacements-xml",
-            file_path,
-        ]
-        result = subprocess.check_output(cmd).decode("utf-8")
-        if "<replacement " in result:
-            return False
-        else:
-            return True
-
-    @staticmethod
-    def _apply_style(file_path, clang_format_bin):
-        cmd = [
-            clang_format_bin,
-            "-style=file",
-            "-i",
-            file_path,
-        ]
-        subprocess.check_output(cmd)
-
-    def run(self, do_apply_style, no_parallel, verbose):
-        if do_apply_style:
-            print("Applying C++/CUDA style...")
-        else:
-            print("Checking C++/CUDA style...")
-
-        if verbose:
-            print("To format:")
-            for file_path in self.file_paths:
-                print("> {}".format(file_path))
-
-        start_time = time.time()
-        if no_parallel:
-            is_valid_files = map(
-                partial(self._check_style,
-                        clang_format_bin=self.clang_format_bin),
-                self.file_paths)
-        else:
-            with multiprocessing.Pool(multiprocessing.cpu_count()) as pool:
-                is_valid_files = pool.map(
-                    partial(self._check_style,
-                            clang_format_bin=self.clang_format_bin),
-                    self.file_paths)
-
-        changed_files = []
-        for is_valid, file_path in zip(is_valid_files, self.file_paths):
-            if not is_valid:
-                changed_files.append(file_path)
-                if do_apply_style:
-                    self._apply_style(file_path, self.clang_format_bin)
-        print("Formatting takes {:.2f}s".format(time.time() - start_time))
-
-        return changed_files
+# Check and import nbformat
+# > not found: throw exception
+try:
+    import nbformat
+except:
+    raise ImportError(
+        "nbformat not found. Install with `pip install nbformat`.")
+print("Using nbformat version {}".format(nbformat.__version__))
 
 
 class PythonFormatter:
