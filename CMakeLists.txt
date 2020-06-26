@@ -359,12 +359,14 @@ export(EXPORT ${PROJECT_NAME}Targets NAMESPACE ${PROJECT_NAME}::)
 add_custom_target(check-style
     COMMAND ${PYTHON_EXECUTABLE}
     ${CMAKE_CURRENT_SOURCE_DIR}/util/scripts/check_style.py
+    COMMENT "Python executable used for style check: ${PYTHON_EXECUTABLE}."
 )
 
 # `make apply-style` runs clang-format to format all source code
 add_custom_target(apply-style
     COMMAND ${PYTHON_EXECUTABLE}
     ${CMAKE_CURRENT_SOURCE_DIR}/util/scripts/check_style.py --do_apply_style
+    COMMENT "Python executable used for style check: ${PYTHON_EXECUTABLE}."
 )
 
 function(open3d_aligned_print first second)
