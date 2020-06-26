@@ -373,7 +373,7 @@ add_custom_target(apply-style
 add_custom_target(check-cpp-style
     COMMAND ${PYTHON_EXECUTABLE}
     # COMMAND python2
-    ${CMAKE_CURRENT_SOURCE_DIR}/util/scripts/check_style.py --cpp_only
+    ${CMAKE_CURRENT_SOURCE_DIR}/util/scripts/check_cpp_style.py
     COMMENT "Python executable used for style check: ${PYTHON_EXECUTABLE}."
 )
 
