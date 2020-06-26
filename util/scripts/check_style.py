@@ -1,5 +1,3 @@
-# This file is compatible with Python 2 and Python 3.
-
 import subprocess
 import re
 import os
@@ -10,13 +8,6 @@ import multiprocessing
 from functools import partial
 import time
 import sys
-
-# Yapf requires python 3.6+
-if not (sys.version_info.major == 3 and sys.version_info.minor >= 6):
-    raise RuntimeError(
-        "Requires Python 3.6+, currently using Python {}.{}.".format(
-            sys.version_info.major, sys.version_info.minor))
-
 
 PYTHON_FORMAT_DIRS = [
     "examples",
@@ -35,7 +26,14 @@ CPP_FORMAT_DIRS = [
     "docs/_static",
 ]
 
-def _check_python_format_libs():
+
+def _import_python_format_libs():
+    # Yapf requires python 3.6+
+    if not (sys.version_info.major == 3 and sys.version_info.minor >= 6):
+        raise RuntimeError(
+            "Python formatting requires Python 3.6+, currently using {}.{}.".
+            format(sys.version_info.major, sys.version_info.minor))
+
     # Check and import yapf
     # > not found: throw exception
     # > version mismatch: throw exception
@@ -58,28 +56,51 @@ def _check_python_format_libs():
             "nbformat not found. Install with `pip install nbformat`.")
     print("Using nbformat version {}".format(nbformat.__version__))
 
+    return yapf, nbformat
 
-def _glob_files(directories, extensions):
+
+def _glob_files(open3d_root_dir, directories, extensions):
     """
     Find files with certain extensions in directories recursively.
 
     Args:
-        directories: list of directories, relative to the root Open3D repo directory.
+        open3d_root_dir: Open3D root directory
+        directories: list of directories, relative to open3d_root_dir.
         extensions: list of extensions, e.g. ["cpp", "h"].
 
     Return:
         List of file paths.
     """
-    pwd = Path(os.path.dirname(os.path.abspath(__file__)))
-    open3d_root_dir = pwd.parent.parent
-
     file_paths = []
     for directory in directories:
-        directory = open3d_root_dir / directory
+        directory = Path(open3d_root_dir) / directory
         for extension in extensions:
             extension_regex = "*." + extension
             file_paths.extend(directory.rglob(extension_regex))
     file_paths = [str(file_path) for file_path in file_paths]
+    file_paths = sorted(list(set(file_paths)))
+    return file_paths
+
+
+def _glob_files_py2(open3d_root_dir, directories, extensions):
+    """
+    Find files with certain extensions in directories recursively.
+
+    Args:
+        open3d_root_dir: Open3D root directory
+        directories: list of directories, relative to open3d_root_dir.
+        extensions: list of extensions, e.g. ["cpp", "h"].
+
+    Return:
+        List of file paths.
+    """
+    file_paths = []
+    for directory in directories:
+        directory = os.path.join(open3d_root_dir, directory)
+        for extension in extensions:
+            extension_regex = "*." + extension
+            file_paths.extend(directory.rglob(extension_regex))
+    file_paths = [file_path for file_path in file_paths]
     file_paths = sorted(list(set(file_paths)))
     return file_paths
 
@@ -214,8 +235,6 @@ class PythonFormatter:
         else:
             print("Checking Python style...")
 
-        _check_python_format_libs()
-
         if verbose:
             print("To format:")
             for file_path in self.file_paths:
@@ -337,7 +356,7 @@ if __name__ == "__main__":
         dest="no_parallel",
         action="store_true",
         default=False,
-        help="Disable parallled execution.",
+        help="Disable parallel execution.",
     )
     parser.add_argument(
         "--verbose",
@@ -357,18 +376,29 @@ if __name__ == "__main__":
 
     # Check formatting libs
     clang_format_bin = _find_clang_format()
-    pwd = Path(os.path.dirname(os.path.abspath(__file__)))
-    python_style_config = str(pwd.parent.parent / ".style.yapf")
+    pwd = os.path.dirname(os.path.abspath(__file__))
+    open3d_root_dir = os.path.join(pwd, "..", "..")
+    python_style_config = os.path.join(open3d_root_dir, ".style.yapf")
 
     # Check or apply style
-    cpp_formatter = CppFormatter(_glob_files(CPP_FORMAT_DIRS,
-                                             ["cpp", "h", "cu", "cuh"]),
-                                 clang_format_bin=clang_format_bin)
-    python_formatter = PythonFormatter(_glob_files(PYTHON_FORMAT_DIRS, ["py"]),
-                                       style_config=python_style_config)
-    jupyter_formatter = JupyterFormatter(_glob_files(JUPYTER_FORMAT_DIRS,
-                                                     ["ipynb"]),
-                                         style_config=python_style_config)
+    cpp_formatter = CppFormatter(
+        _glob_files(open3d_root_dir=open3d_root_dir,
+                    directories=CPP_FORMAT_DIRS,
+                    extensions=["cpp", "h", "cu", "cuh"]),
+        clang_format_bin=clang_format_bin,
+    )
+    python_formatter = PythonFormatter(
+        _glob_files(open3d_root_dir=open3d_root_dir,
+                    directories=PYTHON_FORMAT_DIRS,
+                    extensions=["py"]),
+        style_config=python_style_config,
+    )
+    jupyter_formatter = JupyterFormatter(
+        _glob_files(open3d_root_dir=open3d_root_dir,
+                    directories=JUPYTER_FORMAT_DIRS,
+                    extensions=["ipynb"]),
+        style_config=python_style_config,
+    )
 
     changed_files = []
     changed_files.extend(
