@@ -11,7 +11,8 @@ import sys
 
 pwd = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(pwd)
-from check_cpp_style import _glob_files, _find_clang_format, CppFormatter
+from check_cpp_style import (glob_files, find_clang_format, CppFormatter,
+                             CPP_FORMAT_DIRS)
 
 PYTHON_FORMAT_DIRS = [
     "examples",
@@ -22,12 +23,6 @@ PYTHON_FORMAT_DIRS = [
 
 JUPYTER_FORMAT_DIRS = [
     "examples",
-]
-
-CPP_FORMAT_DIRS = [
-    "cpp",
-    "examples",
-    "docs/_static",
 ]
 
 # Yapf requires python 3.6+
@@ -226,28 +221,28 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     # Check formatting libs
-    clang_format_bin = _find_clang_format()
+    clang_format_bin = find_clang_format()
     pwd = os.path.dirname(os.path.abspath(__file__))
     open3d_root_dir = os.path.join(pwd, "..", "..")
     python_style_config = os.path.join(open3d_root_dir, ".style.yapf")
 
     # Check or apply style
     cpp_formatter = CppFormatter(
-        _glob_files(open3d_root_dir=open3d_root_dir,
-                    directories=CPP_FORMAT_DIRS,
-                    extensions=["cpp", "h", "cu", "cuh"]),
+        glob_files(open3d_root_dir=open3d_root_dir,
+                   directories=CPP_FORMAT_DIRS,
+                   extensions=["cpp", "h", "cu", "cuh"]),
         clang_format_bin=clang_format_bin,
     )
     python_formatter = PythonFormatter(
-        _glob_files(open3d_root_dir=open3d_root_dir,
-                    directories=PYTHON_FORMAT_DIRS,
-                    extensions=["py"]),
+        glob_files(open3d_root_dir=open3d_root_dir,
+                   directories=PYTHON_FORMAT_DIRS,
+                   extensions=["py"]),
         style_config=python_style_config,
     )
     jupyter_formatter = JupyterFormatter(
-        _glob_files(open3d_root_dir=open3d_root_dir,
-                    directories=JUPYTER_FORMAT_DIRS,
-                    extensions=["ipynb"]),
+        glob_files(open3d_root_dir=open3d_root_dir,
+                   directories=JUPYTER_FORMAT_DIRS,
+                   extensions=["ipynb"]),
         style_config=python_style_config,
     )
 

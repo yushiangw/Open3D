@@ -16,7 +16,7 @@ CPP_FORMAT_DIRS = [
 ]
 
 
-def _glob_files_py2(open3d_root_dir, directories, extensions):
+def glob_files(open3d_root_dir, directories, extensions):
     """
     Find files with certain extensions in directories recursively.
     To be compatible with Python 2, pathlib is avoided.
@@ -49,38 +49,7 @@ def _glob_files_py2(open3d_root_dir, directories, extensions):
     return file_paths
 
 
-def _glob_files(open3d_root_dir, directories, extensions):
-    """
-    Find files with certain extensions in directories recursively.
-
-    Args:
-        open3d_root_dir: Open3D root directory
-        directories: list of directories, relative to open3d_root_dir.
-        extensions: list of extensions, e.g. ["cpp", "h"].
-
-    Return:
-        List of file paths.
-    """
-    file_path_new = _glob_files_py2(open3d_root_dir, directories, extensions)
-
-    from pathlib import Path
-    file_paths = []
-    for directory in directories:
-        directory = Path(open3d_root_dir) / directory
-        for extension in extensions:
-            extension_regex = "*." + extension
-            file_paths.extend(directory.rglob(extension_regex))
-    file_paths = [str(file_path) for file_path in file_paths]
-    file_paths = sorted(list(set(file_paths)))
-
-    assert (file_paths, file_path_new)
-    return file_paths
-
-
-glob_files = _glob_files
-
-
-def _find_clang_format():
+def find_clang_format():
     # Find clang-format
     # > not found: throw exception
     # > version mismatch: print warning
@@ -209,15 +178,15 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     # Check formatting libs
-    clang_format_bin = _find_clang_format()
+    clang_format_bin = find_clang_format()
     pwd = os.path.dirname(os.path.abspath(__file__))
     open3d_root_dir = os.path.join(pwd, "..", "..")
 
     # Check or apply style
     cpp_formatter = CppFormatter(
-        _glob_files(open3d_root_dir=open3d_root_dir,
-                    directories=CPP_FORMAT_DIRS,
-                    extensions=["cpp", "h", "cu", "cuh"]),
+        glob_files(open3d_root_dir=open3d_root_dir,
+                   directories=CPP_FORMAT_DIRS,
+                   extensions=["cpp", "h", "cu", "cuh"]),
         clang_format_bin=clang_format_bin,
     )
 
