@@ -355,17 +355,25 @@ add_subdirectory(examples)
 install(EXPORT ${PROJECT_NAME}Targets NAMESPACE ${PROJECT_NAME}:: DESTINATION ${Open3D_INSTALL_CMAKE_DIR})
 export(EXPORT ${PROJECT_NAME}Targets NAMESPACE ${PROJECT_NAME}::)
 
-# `make check-style` errors if styling is not compliant
+# `make check-style` errors if c++/cuda/python/ipynb style is not compliant
 add_custom_target(check-style
     COMMAND ${PYTHON_EXECUTABLE}
     ${CMAKE_CURRENT_SOURCE_DIR}/util/scripts/check_style.py
     COMMENT "Python executable used for style check: ${PYTHON_EXECUTABLE}."
 )
 
-# `make apply-style` runs clang-format to format all source code
+# `make check-style` applies style for c++/cuda/python/ipynb
 add_custom_target(apply-style
     COMMAND ${PYTHON_EXECUTABLE}
     ${CMAKE_CURRENT_SOURCE_DIR}/util/scripts/check_style.py --do_apply_style
+    COMMENT "Python executable used for style check: ${PYTHON_EXECUTABLE}."
+)
+
+# `make check-cpp-style` errors if c++ style is not compliant
+add_custom_target(check-cpp-style
+    COMMAND ${PYTHON_EXECUTABLE}
+    # COMMAND python2
+    ${CMAKE_CURRENT_SOURCE_DIR}/util/scripts/check_style.py --cpp_only
     COMMENT "Python executable used for style check: ${PYTHON_EXECUTABLE}."
 )
 

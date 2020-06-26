@@ -1,3 +1,5 @@
+# This file is compatible with Python 2 and Python 3.
+
 import subprocess
 import re
 import os
@@ -15,27 +17,6 @@ if not (sys.version_info.major == 3 and sys.version_info.minor >= 6):
         "Requires Python 3.6+, currently using Python {}.{}.".format(
             sys.version_info.major, sys.version_info.minor))
 
-# Check and import yapf
-# > not found: throw exception
-# > version mismatch: throw exception
-try:
-    import yapf
-except:
-    raise ImportError(
-        "yapf not found. Install with `pip install yapf==0.28.0`.")
-if yapf.__version__ != "0.28.0":
-    raise RuntimeError(
-        "yapf 0.28.0 required. Install with `pip install yapf==0.28.0`.")
-print("Using yapf version {}".format(yapf.__version__))
-
-# Check and import nbformat
-# > not found: throw exception
-try:
-    import nbformat
-except:
-    raise ImportError(
-        "nbformat not found. Install with `pip install nbformat`.")
-print("Using nbformat version {}".format(nbformat.__version__))
 
 PYTHON_FORMAT_DIRS = [
     "examples",
@@ -53,6 +34,29 @@ CPP_FORMAT_DIRS = [
     "examples",
     "docs/_static",
 ]
+
+def _check_python_format_libs():
+    # Check and import yapf
+    # > not found: throw exception
+    # > version mismatch: throw exception
+    try:
+        import yapf
+    except:
+        raise ImportError(
+            "yapf not found. Install with `pip install yapf==0.28.0`.")
+    if yapf.__version__ != "0.28.0":
+        raise RuntimeError(
+            "yapf 0.28.0 required. Install with `pip install yapf==0.28.0`.")
+    print("Using yapf version {}".format(yapf.__version__))
+
+    # Check and import nbformat
+    # > not found: throw exception
+    try:
+        import nbformat
+    except:
+        raise ImportError(
+            "nbformat not found. Install with `pip install nbformat`.")
+    print("Using nbformat version {}".format(nbformat.__version__))
 
 
 def _glob_files(directories, extensions):
@@ -210,6 +214,8 @@ class PythonFormatter:
         else:
             print("Checking Python style...")
 
+        _check_python_format_libs()
+
         if verbose:
             print("To format:")
             for file_path in self.file_paths:
@@ -339,6 +345,13 @@ if __name__ == "__main__":
         action="store_true",
         default=False,
         help="If true, prints file names while formatting.",
+    )
+    parser.add_argument(
+        "--cpp_only",
+        dest="cpp_only",
+        action="store_true",
+        default=False,
+        help="If true, only runs style check/apply for cpp/cuda files.",
     )
     args = parser.parse_args()
 
