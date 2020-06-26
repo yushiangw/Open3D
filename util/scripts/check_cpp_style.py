@@ -1,7 +1,6 @@
 import subprocess
 import re
 import os
-import shutil
 import argparse
 import multiprocessing
 from functools import partial
@@ -50,12 +49,31 @@ def glob_files(open3d_root_dir, directories, extensions):
 
 
 def find_clang_format():
+
+    def _which(program):
+        # Python 2 compatible shutil.which
+        # https://stackoverflow.com/a/377028/1255535
+        def _is_exe(fpath):
+            return os.path.isfile(fpath) and os.access(fpath, os.X_OK)
+
+        fpath, fname = os.path.split(program)
+        if fpath:
+            if _is_exe(program):
+                return program
+        else:
+            for path in os.environ["PATH"].split(os.pathsep):
+                exe_file = os.path.join(path, program)
+                if _is_exe(exe_file):
+                    return exe_file
+
+        return None
+
     # Find clang-format
     # > not found: throw exception
     # > version mismatch: print warning
-    clang_format_bin = shutil.which("clang-format-5.0")
+    clang_format_bin = _which("clang-format-5.0")
     if clang_format_bin is None:
-        clang_format_bin = shutil.which("clang-format")
+        clang_format_bin = _which("clang-format")
     if clang_format_bin is None:
         raise RuntimeError(
             "clang-format not found. "
@@ -135,11 +153,12 @@ class CppFormatter:
                         clang_format_bin=self.clang_format_bin),
                 self.file_paths)
         else:
-            with multiprocessing.Pool(multiprocessing.cpu_count()) as pool:
-                is_valid_files = pool.map(
-                    partial(self._check_style,
-                            clang_format_bin=self.clang_format_bin),
-                    self.file_paths)
+            # Python 2 pool is not a context manager
+            pool = multiprocessing.Pool(multiprocessing.cpu_count())
+            is_valid_files = pool.map(
+                partial(self._check_style,
+                        clang_format_bin=self.clang_format_bin),
+                self.file_paths)
 
         changed_files = []
         for is_valid, file_path in zip(is_valid_files, self.file_paths):
