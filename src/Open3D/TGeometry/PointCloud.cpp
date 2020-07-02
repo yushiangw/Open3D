@@ -165,12 +165,18 @@ PointCloud PointCloud::VoxelDownSample(
         const std::unordered_set<std::string> &properties_to_skip) const {
     utility::Timer timer;
 
+    Tensor a({2, 3}, Dtype::Float32, Device("CUDA:0"));
+    a = a + 1;
+    (void)a;
+    CudaSync();
+
     timer.Start();
     auto tensor_quantized =
             point_dict_.find("points")->second.AsTensor() / voxel_size;
     timer.Stop();
     CudaSync();
-    utility::LogInfo("[PointCloud] operator Div takes {}", timer.GetDuration());
+    utility::LogInfo("[PointCloud] operator Div takes {} millisecond",
+                     timer.GetDuration());
 
     auto points = point_dict_.find("points")->second.AsTensor();
     std::cout << "[Open3D INFO] shape: " << points.GetShape().ToString()

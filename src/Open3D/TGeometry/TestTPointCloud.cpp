@@ -20,8 +20,9 @@ int main(int argc, char** argv) {
         timer.Start();
         auto pcd_down = pcd.VoxelDownSample(0.01);
         timer.Stop();
-        utility::LogInfo("[TestTPointCloud] VoxelDownSample: {}",
-                         timer.GetDuration());
+        utility::LogInfo(
+                "[Full downsample (including Div)] : takes {} millisecond",
+                timer.GetDuration());
     }
 }
 
