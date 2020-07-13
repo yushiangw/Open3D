@@ -164,8 +164,8 @@ public:
     template <class T>
     T *PointerAs() const {
         if (sizeof(T) != bytes_per_channel_) {
-            utility::LogError("sizeof(T) != byte_per_channel_: {} != {}.",
-                              sizeof(T), bytes_per_channel_);
+            utility::LogThrowError("sizeof(T) != byte_per_channel_: {} != {}.",
+                                   sizeof(T), bytes_per_channel_);
         }
         return (T *)(data_.data());
     }

@@ -509,7 +509,8 @@ TEST(FileSystem, GetPathComponents) {
     std::vector<std::string> cwd_components =
             utility::filesystem::GetPathComponents(cwd);
     if (cwd_components.size() < 2) {
-        utility::LogError("Please do not run unit test from root directory.");
+        utility::LogThrowError(
+                "Please do not run unit test from root directory.");
     }
     std::vector<std::string> parent_components(cwd_components.begin(),
                                                cwd_components.end() - 1);

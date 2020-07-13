@@ -37,16 +37,16 @@ namespace kernel {
 void UnaryEW(const Tensor& src, Tensor& dst, UnaryEWOpCode op_code) {
     // Check shape
     if (!shape_util::CanBeBrocastedToShape(src.GetShape(), dst.GetShape())) {
-        utility::LogError("Shape {} can not be broadcasted to {}.",
-                          src.GetShape(), dst.GetShape());
+        utility::LogThrowError("Shape {} can not be broadcasted to {}.",
+                               src.GetShape(), dst.GetShape());
     }
 
     // Disbatch to device
     Device src_device = src.GetDevice();
     Device dst_device = dst.GetDevice();
     if (src_device != dst_device) {
-        utility::LogError("Source device {} != destination device {}.",
-                          src_device.ToString(), dst_device.ToString());
+        utility::LogThrowError("Source device {} != destination device {}.",
+                               src_device.ToString(), dst_device.ToString());
     }
 
     if (src_device.GetType() == Device::DeviceType::CPU) {
@@ -55,18 +55,19 @@ void UnaryEW(const Tensor& src, Tensor& dst, UnaryEWOpCode op_code) {
 #ifdef BUILD_CUDA_MODULE
         UnaryEWCUDA(src, dst, op_code);
 #else
-        utility::LogError("Not compiled with CUDA, but CUDA device is used.");
+        utility::LogThrowError(
+                "Not compiled with CUDA, but CUDA device is used.");
 #endif
     } else {
-        utility::LogError("UnaryEW Unimplemented device");
+        utility::LogThrowError("UnaryEW Unimplemented device");
     }
 }
 
 void Copy(const Tensor& src, Tensor& dst) {
     // Check shape
     if (!shape_util::CanBeBrocastedToShape(src.GetShape(), dst.GetShape())) {
-        utility::LogError("Shape {} can not be broadcasted to {}.",
-                          src.GetShape(), dst.GetShape());
+        utility::LogThrowError("Shape {} can not be broadcasted to {}.",
+                               src.GetShape(), dst.GetShape());
     }
 
     // Disbatch to device
@@ -76,7 +77,7 @@ void Copy(const Tensor& src, Tensor& dst) {
          src_device_type != Device::DeviceType::CUDA) ||
         (dst_device_type != Device::DeviceType::CPU &&
          dst_device_type != Device::DeviceType::CUDA)) {
-        utility::LogError("Copy: Unimplemented device");
+        utility::LogThrowError("Copy: Unimplemented device");
     }
     if (src_device_type == Device::DeviceType::CPU &&
         dst_device_type == Device::DeviceType::CPU) {
@@ -85,7 +86,8 @@ void Copy(const Tensor& src, Tensor& dst) {
 #ifdef BUILD_CUDA_MODULE
         CopyCUDA(src, dst);
 #else
-        utility::LogError("Not compiled with CUDA, but CUDA device is used.");
+        utility::LogThrowError(
+                "Not compiled with CUDA, but CUDA device is used.");
 #endif
     }
 }

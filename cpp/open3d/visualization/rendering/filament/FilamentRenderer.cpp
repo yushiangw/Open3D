@@ -88,7 +88,7 @@ void FilamentRenderer::UpdateSwapChain() {
 
 #if defined(__APPLE__)
     auto resize_metal_layer = [](void* native_win) -> void* {
-        utility::LogError(
+        utility::LogThrowError(
                 "::resizeMetalLayer() needs to be implemented. Please see "
                 "filament/samples/app/NativeWindowHelperCocoa.mm for "
                 "reference.");

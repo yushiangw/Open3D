@@ -59,8 +59,8 @@ private:
                 dl_device_type = DLDeviceType::kDLGPU;
                 break;
             default:
-                utility::LogError("ToDLPack: unsupported device type {}",
-                                  device.ToString());
+                utility::LogThrowError("ToDLPack: unsupported device type {}",
+                                       device.ToString());
         }
 
         // Prepare dl_context
@@ -88,7 +88,7 @@ private:
                 dl_data_type.code = DLDataTypeCode::kDLUInt;
                 break;
             default:
-                utility::LogError("Unsupported data type");
+                utility::LogThrowError("Unsupported data type");
         }
         dl_data_type.bits =
                 static_cast<uint8_t>(DtypeUtil::ByteSize(dtype) * 8);
@@ -200,7 +200,7 @@ Tensor Tensor::GetItem(const TensorKey& tk) const {
         Tensor index_tensor(*tk.GetIndexTensor());
         return IndexGet({index_tensor});
     } else {
-        utility::LogError("Internal error: wrong TensorKeyMode.");
+        utility::LogThrowError("Internal error: wrong TensorKeyMode.");
     }
 }
 
@@ -236,7 +236,7 @@ Tensor Tensor::GetItem(const std::vector<TensorKey>& tks) const {
             } else if (tk.GetMode() == TensorKey::TensorKeyMode::IndexTensor) {
                 preprocess_tks.push_back(TensorKey::Slice(None, None, None));
             } else {
-                utility::LogError("Internal error: wrong TensorKeyMode.");
+                utility::LogThrowError("Internal error: wrong TensorKeyMode.");
             }
         }
         Tensor preprocess_t = GetItem(preprocess_tks);
@@ -254,7 +254,7 @@ Tensor Tensor::GetItem(const std::vector<TensorKey>& tks) const {
             } else if (tk.GetMode() == TensorKey::TensorKeyMode::IndexTensor) {
                 index_tensors.push_back(Tensor(*tk.GetIndexTensor()));
             } else {
-                utility::LogError("Internal error: wrong TensorKeyMode.");
+                utility::LogThrowError("Internal error: wrong TensorKeyMode.");
             }
         }
 
@@ -273,7 +273,7 @@ Tensor Tensor::GetItem(const std::vector<TensorKey>& tks) const {
                         tk_new.GetStep());
             slice_dim++;
         } else {
-            utility::LogError("Internal error: wrong TensorKeyMode.");
+            utility::LogThrowError("Internal error: wrong TensorKeyMode.");
         }
     }
     return t;
@@ -309,7 +309,7 @@ Tensor Tensor::SetItem(const std::vector<TensorKey>& tks, const Tensor& value) {
             } else if (tk.GetMode() == TensorKey::TensorKeyMode::IndexTensor) {
                 preprocess_tks.push_back(TensorKey::Slice(None, None, None));
             } else {
-                utility::LogError("Internal error: wrong TensorKeyMode.");
+                utility::LogThrowError("Internal error: wrong TensorKeyMode.");
             }
         }
         Tensor preprocess_t = GetItem(preprocess_tks);
@@ -326,7 +326,7 @@ Tensor Tensor::SetItem(const std::vector<TensorKey>& tks, const Tensor& value) {
             } else if (tk.GetMode() == TensorKey::TensorKeyMode::IndexTensor) {
                 index_tensors.push_back(Tensor(*tk.GetIndexTensor()));
             } else {
-                utility::LogError("Internal error: wrong TensorKeyMode.");
+                utility::LogThrowError("Internal error: wrong TensorKeyMode.");
             }
         }
 
@@ -353,8 +353,8 @@ void Tensor::Assign(const Tensor& other) {
 /// Broadcast Tensor to a new broadcastable shape
 Tensor Tensor::Broadcast(const SizeVector& dst_shape) const {
     if (!shape_util::CanBeBrocastedToShape(shape_, dst_shape)) {
-        utility::LogError("Cannot broadcast shape {} to shape {}.",
-                          shape_.ToString(), dst_shape);
+        utility::LogThrowError("Cannot broadcast shape {} to shape {}.",
+                               shape_.ToString(), dst_shape);
     }
     Tensor dst_tensor(dst_shape, dtype_, GetDevice());
     dst_tensor.AsRvalue() = *this;
@@ -363,8 +363,8 @@ Tensor Tensor::Broadcast(const SizeVector& dst_shape) const {
 
 Tensor Tensor::Expand(const SizeVector& dst_shape) const {
     if (!shape_util::CanBeBrocastedToShape(shape_, dst_shape)) {
-        utility::LogError("Cannot expand shape {} to shape {}.",
-                          shape_.ToString(), dst_shape);
+        utility::LogThrowError("Cannot expand shape {} to shape {}.",
+                               shape_.ToString(), dst_shape);
     }
     int64_t src_ndims = NumDims();
     int64_t dst_ndims = dst_shape.size();
@@ -418,7 +418,7 @@ Tensor Tensor::View(const SizeVector& dst_shape) const {
     if (can_restride) {
         return AsStrided(inferred_dst_shape, new_strides);
     } else {
-        utility::LogError(
+        utility::LogThrowError(
                 "View shape {} is not compatible with Tensor's size {} and "
                 "sride {}, at least one dimension spacs across two contiguous "
                 "subspaces. Use Reshape() instead.",
@@ -599,7 +599,7 @@ Tensor Tensor::operator[](int64_t i) const { return IndexExtract(0, i); }
 
 Tensor Tensor::IndexExtract(int64_t dim, int64_t idx) const {
     if (shape_.size() == 0) {
-        utility::LogError("Tensor has shape (), cannot be indexed.");
+        utility::LogThrowError("Tensor has shape (), cannot be indexed.");
     }
     dim = shape_util::WrapDim(dim, NumDims());
     idx = shape_util::WrapDim(idx, shape_[dim]);
@@ -618,16 +618,17 @@ Tensor Tensor::Slice(int64_t dim,
                      int64_t stop,
                      int64_t step) const {
     if (shape_.size() == 0) {
-        utility::LogError("Slice cannot be applied to 0-dim Tensor");
+        utility::LogThrowError("Slice cannot be applied to 0-dim Tensor");
     }
     dim = shape_util::WrapDim(dim, NumDims());
     if (dim < 0 || dim >= static_cast<int64_t>(shape_.size())) {
-        utility::LogError("Dim {} is out of bound for SizeVector of length {}",
-                          dim, shape_.size());
+        utility::LogThrowError(
+                "Dim {} is out of bound for SizeVector of length {}", dim,
+                shape_.size());
     }
     // TODO: support negative step sizes
     if (step == 0) {
-        utility::LogError("Step size cannot be 0");
+        utility::LogThrowError("Step size cannot be 0");
     }
     start = shape_util::WrapDim(start, shape_[dim]);
     stop = shape_util::WrapDim(stop, shape_[dim], /*inclusive=*/true);
@@ -664,7 +665,7 @@ void Tensor::IndexSet(const std::vector<Tensor>& index_tensors,
 Tensor Tensor::Permute(const SizeVector& dims) const {
     // Check dimension size
     if (static_cast<int64_t>(dims.size()) != NumDims()) {
-        utility::LogError(
+        utility::LogThrowError(
                 "Tensor has {} dimensions, but permuntation have {} "
                 "dimensions.",
                 NumDims(), dims.size());
@@ -678,8 +679,9 @@ Tensor Tensor::Permute(const SizeVector& dims) const {
     }
     if (!std::all_of(seen_dims.begin(), seen_dims.end(),
                      [](bool seen) { return seen; })) {
-        utility::LogError("Permute dims must be a permuntation from 0 to {}",
-                          dims.size() - 1);
+        utility::LogThrowError(
+                "Permute dims must be a permuntation from 0 to {}",
+                dims.size() - 1);
     }
 
     // Map to new shape and strides
@@ -719,7 +721,7 @@ Tensor Tensor::T() const {
     } else if (n_dims == 2) {
         return Transpose(0, 1);
     } else {
-        utility::LogError(
+        utility::LogThrowError(
                 "Tensor::T() expects a Tensor with <= 2 dimensions, but the "
                 "Tensor as {} dimensions.");
     }
@@ -782,7 +784,7 @@ Tensor Tensor::Sum(const SizeVector& dims, bool keepdim) const {
 
 Tensor Tensor::Mean(const SizeVector& dims, bool keepdim) const {
     if (dtype_ != Dtype::Float32 && dtype_ != Dtype::Float64) {
-        utility::LogError(
+        utility::LogThrowError(
                 "Can only compute mean for Float32 or Float64, got {} instead.",
                 DtypeUtil::ToString(dtype_));
     }
@@ -901,7 +903,7 @@ Tensor Tensor::Abs_() {
 
 Device Tensor::GetDevice() const {
     if (blob_ == nullptr) {
-        utility::LogError("Blob is null, cannot get device");
+        utility::LogThrowError("Blob is null, cannot get device");
     }
     return blob_->GetDevice();
 }
@@ -1067,14 +1069,14 @@ Tensor Tensor::FromDLPack(const DLManagedTensor* src) {
             device = Device("CUDA", src->dl_tensor.ctx.device_id);
             break;
         default:
-            utility::LogError("Unsupported device_type {}",
-                              src->dl_tensor.ctx.device_type);
+            utility::LogThrowError("Unsupported device_type {}",
+                                   src->dl_tensor.ctx.device_type);
     }
 
     Dtype dtype;
     if (src->dl_tensor.dtype.lanes != 1) {
-        utility::LogError("Only supports lanes == 1, but lanes == {}",
-                          src->dl_tensor.dtype.lanes);
+        utility::LogThrowError("Only supports lanes == 1, but lanes == {}",
+                               src->dl_tensor.dtype.lanes);
     }
     switch (src->dl_tensor.dtype.code) {
         case DLDataTypeCode::kDLUInt:
@@ -1083,8 +1085,8 @@ Tensor Tensor::FromDLPack(const DLManagedTensor* src) {
                     dtype = Dtype::UInt8;
                     break;
                 default:
-                    utility::LogError("Unsupported kDLUInt bits {}",
-                                      src->dl_tensor.dtype.bits);
+                    utility::LogThrowError("Unsupported kDLUInt bits {}",
+                                           src->dl_tensor.dtype.bits);
             }
             break;
         case DLDataTypeCode::kDLInt:
@@ -1096,8 +1098,8 @@ Tensor Tensor::FromDLPack(const DLManagedTensor* src) {
                     dtype = Dtype::Int64;
                     break;
                 default:
-                    utility::LogError("Unsupported kDLInt bits {}",
-                                      src->dl_tensor.dtype.bits);
+                    utility::LogThrowError("Unsupported kDLInt bits {}",
+                                           src->dl_tensor.dtype.bits);
             }
             break;
         case DLDataTypeCode::kDLFloat:
@@ -1109,13 +1111,13 @@ Tensor Tensor::FromDLPack(const DLManagedTensor* src) {
                     dtype = Dtype::Float64;
                     break;
                 default:
-                    utility::LogError("Unsupported kDLFloat bits {}",
-                                      src->dl_tensor.dtype.bits);
+                    utility::LogThrowError("Unsupported kDLFloat bits {}",
+                                           src->dl_tensor.dtype.bits);
             }
             break;
         default:
-            utility::LogError("Unsupported dtype code {}",
-                              src->dl_tensor.dtype.code);
+            utility::LogThrowError("Unsupported dtype code {}",
+                                   src->dl_tensor.dtype.code);
     }
 
     // Open3D Blob's expects an std::function<void(void*)> deleter.
@@ -1153,16 +1155,18 @@ bool Tensor::AllClose(const Tensor& other, double rtol, double atol) const {
 
 Tensor Tensor::IsClose(const Tensor& other, double rtol, double atol) const {
     if (GetDevice() != other.GetDevice()) {
-        utility::LogError("Device mismatch {} != {}.", GetDevice().ToString(),
-                          other.GetDevice().ToString());
+        utility::LogThrowError("Device mismatch {} != {}.",
+                               GetDevice().ToString(),
+                               other.GetDevice().ToString());
     }
     if (dtype_ != other.dtype_) {
-        utility::LogError("Dtype mismatch {} != {}.",
-                          DtypeUtil::ToString(dtype_),
-                          DtypeUtil::ToString(other.dtype_));
+        utility::LogThrowError("Dtype mismatch {} != {}.",
+                               DtypeUtil::ToString(dtype_),
+                               DtypeUtil::ToString(other.dtype_));
     }
     if (shape_ != other.shape_) {
-        utility::LogError("Shape mismatch {} != {}.", shape_, other.shape_);
+        utility::LogThrowError("Shape mismatch {} != {}.", shape_,
+                               other.shape_);
     }
 
     Tensor lhs = this->To(Dtype::Float64);

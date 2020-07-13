@@ -42,10 +42,11 @@ Tensor NonZero(const Tensor& src) {
 #ifdef BUILD_CUDA_MODULE
         return NonZeroCUDA(src);
 #else
-        utility::LogError("Not compiled with CUDA, but CUDA device is used.");
+        utility::LogThrowError(
+                "Not compiled with CUDA, but CUDA device is used.");
 #endif
     } else {
-        utility::LogError("NonZero: Unimplemented device");
+        utility::LogThrowError("NonZero: Unimplemented device");
     }
 }
 

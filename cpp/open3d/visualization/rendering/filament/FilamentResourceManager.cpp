@@ -68,7 +68,7 @@ Handle RegisterResource(filament::Engine& engine,
                         ResourceType* resource,
                         ResourcesContainer<ResourceType>& container) {
     if (!resource) {
-        utility::LogError("Trying to register empty resource!");
+        utility::LogThrowError("Trying to register empty resource!");
         return Handle::kBad;
     }
 
@@ -96,7 +96,8 @@ void DestroyResource(const REHandle_abstract& id,
                      ResourcesContainer<ResourceType>& container) {
     auto found = container.find(id);
     if (found == container.end()) {
-        utility::LogError("Trying to destroy nonexistent resource ({})!", id);
+        utility::LogThrowError("Trying to destroy nonexistent resource ({})!",
+                               id);
         return;
     }
 
@@ -178,8 +179,8 @@ TextureSettings GetSettingsFromImage(const geometry::Image& image) {
             settings.format = filament::Texture::InternalFormat::RGBA8;
             break;
         default:
-            utility::LogError("Unsupported image number of channels: {}",
-                              image.num_of_channels_);
+            utility::LogThrowError("Unsupported image number of channels: {}",
+                                   image.num_of_channels_);
             break;
     }
 
@@ -188,8 +189,8 @@ TextureSettings GetSettingsFromImage(const geometry::Image& image) {
             settings.image_type = filament::Texture::Type::UBYTE;
             break;
         default:
-            utility::LogError("Unsupported image bytes per channel: {}",
-                              image.bytes_per_channel_);
+            utility::LogThrowError("Unsupported image bytes per channel: {}",
+                                   image.bytes_per_channel_);
             break;
     }
 

@@ -36,7 +36,7 @@ using namespace open3d;
 void WriteJsonToFile(const std::string &filename, const Json::Value &value) {
     std::ofstream out(filename);
     if (!out.is_open()) {
-        utility::LogError("Cannot write to {}", filename);
+        utility::LogThrowError("Cannot write to {}", filename);
     }
 
     Json::StreamWriterBuilder builder;
@@ -102,17 +102,18 @@ int main(int argc, char **argv) {
     } else {
         output_path = utility::GetProgramOptionAsString(argc, argv, "--output");
         if (output_path.empty()) {
-            utility::LogError("Output path {} is empty, only play mkv.",
-                              output_path);
+            utility::LogThrowError("Output path {} is empty, only play mkv.",
+                                   output_path);
             return 1;
         }
         if (utility::filesystem::DirectoryExists(output_path)) {
-            utility::LogError("Output path {} already existing, only play mkv.",
-                              output_path);
+            utility::LogThrowError(
+                    "Output path {} already existing, only play mkv.",
+                    output_path);
             return 1;
         } else if (!utility::filesystem::MakeDirectory(output_path)) {
-            utility::LogError("Unable to create path {}, only play mkv.",
-                              output_path);
+            utility::LogThrowError("Unable to create path {}, only play mkv.",
+                                   output_path);
             return 1;
         } else {
             utility::LogInfo("Decompress images to {}", output_path);
@@ -125,7 +126,7 @@ int main(int argc, char **argv) {
     io::MKVReader mkv_reader;
     mkv_reader.Open(mkv_filename);
     if (!mkv_reader.IsOpened()) {
-        utility::LogError("Unable to open {}", mkv_filename);
+        utility::LogThrowError("Unable to open {}", mkv_filename);
         return 1;
     }
 

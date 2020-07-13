@@ -50,13 +50,13 @@ int main(int argc, char **argv) {
                         "format:", 0.42001);
 
     try {
-        utility::LogError("This Error exception is catched");
+        utility::LogThrowError("This Error exception is catched");
     } catch (const std::exception &e) {
         utility::LogInfo("Catched exception msg: {}", e.what());
     }
     utility::LogInfo("This Info message shall print in regular color");
-    utility::LogError("This Error message terminates the program");
-    utility::LogError("This Error message should NOT be visible");
+    utility::LogThrowError("This Error message terminates the program");
+    utility::LogThrowError("This Error message should NOT be visible");
 
     return 0;
 }

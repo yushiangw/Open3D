@@ -43,7 +43,7 @@ void pybind_core_size_vector(py::module &m) {
                        np_array) {
                 py::buffer_info info = np_array.request();
                 if (info.ndim != 1) {
-                    utility::LogError("SizeVector must be 1-D array.");
+                    utility::LogThrowError("SizeVector must be 1-D array.");
                 }
                 // The buffer is copied to avoid corruption.
                 int64_t *start = static_cast<int64_t *>(info.ptr);

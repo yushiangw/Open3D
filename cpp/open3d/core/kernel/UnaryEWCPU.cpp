@@ -119,7 +119,7 @@ void UnaryEWCPU(const Tensor& src, Tensor& dst, UnaryEWOpCode op_code) {
 
     auto assert_dtype_is_float = [](Dtype dtype) -> void {
         if (dtype != Dtype::Float32 && dtype != Dtype::Float64) {
-            utility::LogError(
+            utility::LogThrowError(
                     "Only supports Float32 and Float64, but {} is used.",
                     DtypeUtil::ToString(dtype));
         }
@@ -138,7 +138,7 @@ void UnaryEWCPU(const Tensor& src, Tensor& dst, UnaryEWOpCode op_code) {
                 CPULauncher::LaunchUnaryEWKernel(
                         indexer, CPULogicalNotElementKernel<scalar_t, bool>);
             } else {
-                utility::LogError(
+                utility::LogThrowError(
                         "Boolean op's output type must be boolean or the "
                         "same type as the input.");
             }
@@ -176,7 +176,8 @@ void UnaryEWCPU(const Tensor& src, Tensor& dst, UnaryEWOpCode op_code) {
                             indexer, CPUAbsElementKernel<scalar_t>);
                     break;
                 default:
-                    utility::LogError("Unimplemented op_code for UnaryEWCPU");
+                    utility::LogThrowError(
+                            "Unimplemented op_code for UnaryEWCPU");
                     break;
             }
         });

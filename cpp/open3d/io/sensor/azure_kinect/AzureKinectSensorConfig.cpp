@@ -291,7 +291,7 @@ void AzureKinectSensorConfig::ConvertFromNativeConfig(
     config_["disable_streaming_indicator"]       = k4a_config.disable_streaming_indicator ? "true" : "false";
     // clang-format on
     if (!IsValidConfig(config_)) {
-        utility::LogError(
+        utility::LogThrowError(
                 "Internal error, invalid configs. Maybe SDK version is "
                 "mismatched.");
     }

@@ -70,8 +70,9 @@ public:
         int result = kdtree_.SearchRadius<Eigen::Vector3d>(query, radius,
                                                            indices, distance2);
         if (result != radiusInSteps * 2) {
-            utility::LogError("size={:d} radiusInSteps={:d} pos={:d} num={:d}",
-                              size_, radiusInSteps, pos_, result);
+            utility::LogThrowError(
+                    "size={:d} radiusInSteps={:d} pos={:d} num={:d}", size_,
+                    radiusInSteps, pos_, result);
         }
     }
 };

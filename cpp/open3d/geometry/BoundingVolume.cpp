@@ -69,7 +69,7 @@ OrientedBoundingBox OrientedBoundingBox::GetOrientedBoundingBox() const {
 
 OrientedBoundingBox& OrientedBoundingBox::Transform(
         const Eigen::Matrix4d& transformation) {
-    utility::LogError(
+    utility::LogThrowError(
             "A general transform of an OrientedBoundingBox is not implemented. "
             "Call Translate, Scale, and Rotate.");
     return *this;
@@ -224,7 +224,7 @@ OrientedBoundingBox AxisAlignedBoundingBox::GetOrientedBoundingBox() const {
 
 AxisAlignedBoundingBox& AxisAlignedBoundingBox::Transform(
         const Eigen::Matrix4d& transformation) {
-    utility::LogError(
+    utility::LogThrowError(
             "A general transform of a AxisAlignedBoundingBox would not be axis "
             "aligned anymore, convert it to a OrientedBoundingBox first");
     return *this;
@@ -252,7 +252,7 @@ AxisAlignedBoundingBox& AxisAlignedBoundingBox::Scale(
 
 AxisAlignedBoundingBox& AxisAlignedBoundingBox::Rotate(
         const Eigen::Matrix3d& rotation, const Eigen::Vector3d& center) {
-    utility::LogError(
+    utility::LogThrowError(
             "A rotation of a AxisAlignedBoundingBox would not be axis aligned "
             "anymore, convert it to an OrientedBoundingBox first");
     return *this;

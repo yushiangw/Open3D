@@ -203,7 +203,7 @@ static std::shared_ptr<geometry::Image> ConvertDepthImageToXYZImage(
         const geometry::Image &depth, const Eigen::Matrix3d &intrinsic_matrix) {
     auto image_xyz = std::make_shared<geometry::Image>();
     if (depth.num_of_channels_ != 1 || depth.bytes_per_channel_ != 4) {
-        utility::LogError(
+        utility::LogThrowError(
                 "[ConvertDepthImageToXYZImage] Unsupported image format.");
     }
     const double inv_fx = 1.0 / intrinsic_matrix(0, 0);
@@ -306,7 +306,7 @@ static void NormalizeIntensity(geometry::Image &image_s,
                                CorrespondenceSetPixelWise &correspondence) {
     if (image_s.width_ != image_t.width_ ||
         image_s.height_ != image_t.height_) {
-        utility::LogError(
+        utility::LogThrowError(
                 "[NormalizeIntensity] Size of two input images should be "
                 "same");
     }

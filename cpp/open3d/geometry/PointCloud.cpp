@@ -306,7 +306,7 @@ std::shared_ptr<PointCloud> PointCloud::VoxelDownSample(
         double voxel_size) const {
     auto output = std::make_shared<PointCloud>();
     if (voxel_size <= 0.0) {
-        utility::LogError("[VoxelDownSample] voxel_size <= 0.");
+        utility::LogThrowError("[VoxelDownSample] voxel_size <= 0.");
     }
     Eigen::Vector3d voxel_size3 =
             Eigen::Vector3d(voxel_size, voxel_size, voxel_size);
@@ -314,7 +314,7 @@ std::shared_ptr<PointCloud> PointCloud::VoxelDownSample(
     Eigen::Vector3d voxel_max_bound = GetMaxBound() + voxel_size3 * 0.5;
     if (voxel_size * std::numeric_limits<int>::max() <
         (voxel_max_bound - voxel_min_bound).maxCoeff()) {
-        utility::LogError("[VoxelDownSample] voxel_size is too small.");
+        utility::LogThrowError("[VoxelDownSample] voxel_size is too small.");
     }
     std::unordered_map<Eigen::Vector3i, AccumulatedPoint,
                        utility::hash_eigen<Eigen::Vector3i>>
@@ -355,7 +355,7 @@ PointCloud::VoxelDownSampleAndTrace(double voxel_size,
     auto output = std::make_shared<PointCloud>();
     Eigen::MatrixXi cubic_id;
     if (voxel_size <= 0.0) {
-        utility::LogError("[VoxelDownSample] voxel_size <= 0.");
+        utility::LogThrowError("[VoxelDownSample] voxel_size <= 0.");
     }
     // Note: this is different from VoxelDownSample.
     // It is for fixing coordinate for multiscale voxel space
@@ -363,7 +363,7 @@ PointCloud::VoxelDownSampleAndTrace(double voxel_size,
     auto voxel_max_bound = max_bound;
     if (voxel_size * std::numeric_limits<int>::max() <
         (voxel_max_bound - voxel_min_bound).maxCoeff()) {
-        utility::LogError("[VoxelDownSample] voxel_size is too small.");
+        utility::LogThrowError("[VoxelDownSample] voxel_size is too small.");
     }
     std::unordered_map<Eigen::Vector3i, AccumulatedPointForTrace,
                        utility::hash_eigen<Eigen::Vector3i>>
@@ -420,7 +420,7 @@ PointCloud::VoxelDownSampleAndTrace(double voxel_size,
 std::shared_ptr<PointCloud> PointCloud::UniformDownSample(
         size_t every_k_points) const {
     if (every_k_points == 0) {
-        utility::LogError("[UniformDownSample] Illegal sample rate.");
+        utility::LogThrowError("[UniformDownSample] Illegal sample rate.");
     }
     std::vector<size_t> indices;
     for (size_t i = 0; i < points_.size(); i += every_k_points) {
@@ -432,7 +432,7 @@ std::shared_ptr<PointCloud> PointCloud::UniformDownSample(
 std::shared_ptr<PointCloud> PointCloud::Crop(
         const AxisAlignedBoundingBox &bbox) const {
     if (bbox.IsEmpty()) {
-        utility::LogError(
+        utility::LogThrowError(
                 "[CropPointCloud] AxisAlignedBoundingBox either has zeros "
                 "size, or has wrong bounds.");
     }
@@ -441,7 +441,7 @@ std::shared_ptr<PointCloud> PointCloud::Crop(
 std::shared_ptr<PointCloud> PointCloud::Crop(
         const OrientedBoundingBox &bbox) const {
     if (bbox.IsEmpty()) {
-        utility::LogError(
+        utility::LogThrowError(
                 "[CropPointCloud] AxisAlignedBoundingBox either has zeros "
                 "size, or has wrong bounds.");
     }
@@ -451,7 +451,7 @@ std::shared_ptr<PointCloud> PointCloud::Crop(
 std::tuple<std::shared_ptr<PointCloud>, std::vector<size_t>>
 PointCloud::RemoveRadiusOutliers(size_t nb_points, double search_radius) const {
     if (nb_points < 1 || search_radius <= 0) {
-        utility::LogError(
+        utility::LogThrowError(
                 "[RemoveRadiusOutliers] Illegal input parameters,"
                 "number of points and radius must be positive");
     }
@@ -481,7 +481,7 @@ std::tuple<std::shared_ptr<PointCloud>, std::vector<size_t>>
 PointCloud::RemoveStatisticalOutliers(size_t nb_neighbors,
                                       double std_ratio) const {
     if (nb_neighbors < 1 || std_ratio <= 0) {
-        utility::LogError(
+        utility::LogThrowError(
                 "[RemoveStatisticalOutliers] Illegal input parameters, number "
                 "of neighbors and standard deviation ratio must be positive");
     }
@@ -622,7 +622,7 @@ std::tuple<std::shared_ptr<TriangleMesh>, std::vector<size_t>>
 PointCloud::HiddenPointRemoval(const Eigen::Vector3d &camera_location,
                                const double radius) const {
     if (radius <= 0) {
-        utility::LogError(
+        utility::LogThrowError(
                 "[HiddenPointRemoval] radius must be larger than zero.");
     }
 

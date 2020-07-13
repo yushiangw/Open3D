@@ -52,9 +52,9 @@ std::string MKVReader::GetTagInMetadata(const std::string &tag_name) {
     if (K4A_BUFFER_RESULT_SUCCEEDED == result) {
         return res_buffer;
     } else if (K4A_BUFFER_RESULT_TOO_SMALL == result) {
-        utility::LogError("{} tag's content is too long.", tag_name);
+        utility::LogThrowError("{} tag's content is too long.", tag_name);
     } else {
-        utility::LogError("{} tag does not exist.", tag_name);
+        utility::LogThrowError("{} tag does not exist.", tag_name);
     }
 }
 
@@ -87,7 +87,7 @@ Json::Value MKVReader::GetMetadataJson() {
                                         {"3072P", std::make_pair(4096, 3072)}});
 
     if (!IsOpened()) {
-        utility::LogError("Null file handler. Please call Open().");
+        utility::LogThrowError("Null file handler. Please call Open().");
     }
 
     Json::Value value;
@@ -95,7 +95,7 @@ Json::Value MKVReader::GetMetadataJson() {
     k4a_calibration_t calibration;
     if (K4A_RESULT_SUCCEEDED !=
         k4a_plugin::k4a_playback_get_calibration(handle_, &calibration)) {
-        utility::LogError("Failed to get calibration");
+        utility::LogThrowError("Failed to get calibration");
     }
 
     camera::PinholeCameraIntrinsic pinhole_camera;
@@ -115,12 +115,12 @@ Json::Value MKVReader::GetMetadataJson() {
     auto color_mode = value["color_mode"].asString();
     size_t pos = color_mode.find('_');
     if (pos == std::string::npos) {
-        utility::LogError("Unknown color format {}", color_mode);
+        utility::LogThrowError("Unknown color format {}", color_mode);
     }
     std::string resolution =
             std::string(color_mode.begin() + pos + 1, color_mode.end());
     if (resolution_to_width_height.count(resolution) == 0) {
-        utility::LogError("Unknown resolution format {}", resolution);
+        utility::LogThrowError("Unknown resolution format {}", resolution);
     }
 
     auto width_height = resolution_to_width_height.at(resolution);
@@ -156,7 +156,7 @@ bool MKVReader::SeekTimestamp(size_t timestamp) {
 
 std::shared_ptr<geometry::RGBDImage> MKVReader::NextFrame() {
     if (!IsOpened()) {
-        utility::LogError("Null file handler. Please call Open().");
+        utility::LogThrowError("Null file handler. Please call Open().");
     }
 
     k4a_capture_t k4a_capture;

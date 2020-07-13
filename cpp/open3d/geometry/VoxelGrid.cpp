@@ -110,43 +110,43 @@ OrientedBoundingBox VoxelGrid::GetOrientedBoundingBox() const {
 }
 
 VoxelGrid &VoxelGrid::Transform(const Eigen::Matrix4d &transformation) {
-    utility::LogError("VoxelGrid::Transform is not supported");
+    utility::LogThrowError("VoxelGrid::Transform is not supported");
     return *this;
 }
 
 VoxelGrid &VoxelGrid::Translate(const Eigen::Vector3d &translation,
                                 bool relative) {
-    utility::LogError("Not implemented");
+    utility::LogThrowError("Not implemented");
     return *this;
 }
 
 VoxelGrid &VoxelGrid::Scale(const double scale, const Eigen::Vector3d &center) {
-    utility::LogError("Not implemented");
+    utility::LogThrowError("Not implemented");
     return *this;
 }
 
 VoxelGrid &VoxelGrid::Rotate(const Eigen::Matrix3d &R,
                              const Eigen::Vector3d &center) {
-    utility::LogError("Not implemented");
+    utility::LogThrowError("Not implemented");
     return *this;
 }
 
 VoxelGrid &VoxelGrid::operator+=(const VoxelGrid &voxelgrid) {
     if (voxel_size_ != voxelgrid.voxel_size_) {
-        utility::LogError(
+        utility::LogThrowError(
                 "[VoxelGrid] Could not combine VoxelGrid because voxel_size "
                 "differs (this=%f, other=%f)",
                 voxel_size_, voxelgrid.voxel_size_);
     }
     if (origin_ != voxelgrid.origin_) {
-        utility::LogError(
+        utility::LogThrowError(
                 "[VoxelGrid] Could not combine VoxelGrid because origin "
                 "differs (this=%f,%f,%f, other=%f,%f,%f)",
                 origin_(0), origin_(1), origin_(2), voxelgrid.origin_(0),
                 voxelgrid.origin_(1), voxelgrid.origin_(2));
     }
     if (this->HasColors() != voxelgrid.HasColors()) {
-        utility::LogError(
+        utility::LogThrowError(
                 "[VoxelGrid] Could not combine VoxelGrid one has colors and "
                 "the other not.");
     }
@@ -275,7 +275,7 @@ VoxelGrid &VoxelGrid::CarveDepthMap(
         bool keep_voxels_outside_image) {
     if (depth_map.height_ != camera_parameter.intrinsic_.height_ ||
         depth_map.width_ != camera_parameter.intrinsic_.width_) {
-        utility::LogError(
+        utility::LogThrowError(
                 "[VoxelGrid] provided depth_map dimensions are not compatible "
                 "with the provided camera_parameters");
     }
@@ -319,7 +319,7 @@ VoxelGrid &VoxelGrid::CarveSilhouette(
         bool keep_voxels_outside_image) {
     if (silhouette_mask.height_ != camera_parameter.intrinsic_.height_ ||
         silhouette_mask.width_ != camera_parameter.intrinsic_.width_) {
-        utility::LogError(
+        utility::LogThrowError(
                 "[VoxelGrid] provided silhouette_mask dimensions are not "
                 "compatible with the provided camera_parameters");
     }

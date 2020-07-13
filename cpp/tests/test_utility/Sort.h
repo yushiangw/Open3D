@@ -42,8 +42,9 @@ template <class EigenMatrix>
 struct EigenLess {
     bool operator()(const EigenMatrix& lhs, const EigenMatrix& rhs) {
         if (lhs.size() != rhs.size()) {
-            utility::LogError("Eigen matrices have different sizes {} != {}",
-                              lhs.size(), rhs.size());
+            utility::LogThrowError(
+                    "Eigen matrices have different sizes {} != {}", lhs.size(),
+                    rhs.size());
         }
         for (int i = 0; i < lhs.size(); i++) {
             if (lhs(i) == rhs(i)) {
@@ -113,7 +114,8 @@ std::vector<size_t> GetIndicesAToB(
         const std::vector<Eigen::Matrix<T, M, N, A>>& b,
         double threshold = 1e-6) {
     if (a.size() != b.size()) {
-        utility::LogError("a.size() != b.size(): {} != {}", a.size(), b.size());
+        utility::LogThrowError("a.size() != b.size(): {} != {}", a.size(),
+                               b.size());
     }
     size_t size = a.size();
 

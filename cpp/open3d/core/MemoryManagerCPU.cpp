@@ -37,7 +37,7 @@ void* CPUMemoryManager::Malloc(size_t byte_size, const Device& device) {
     void* ptr;
     ptr = std::malloc(byte_size);
     if (byte_size != 0 && !ptr) {
-        utility::LogError("CPU malloc failed");
+        utility::LogThrowError("CPU malloc failed");
     }
     return ptr;
 }

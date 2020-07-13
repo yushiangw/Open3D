@@ -80,7 +80,7 @@ bool Task::IsFinished() const {
         case ThreadState::FINISHED:
             return true;
     }
-    utility::LogError("Unexpected thread state");
+    utility::LogThrowError("Unexpected thread state");
 }
 
 void Task::WaitToFinish() {

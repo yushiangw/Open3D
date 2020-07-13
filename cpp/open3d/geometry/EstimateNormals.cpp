@@ -371,7 +371,7 @@ void PointCloud::OrientNormalsToAlignWithDirection(
         const Eigen::Vector3d &orientation_reference
         /* = Eigen::Vector3d(0.0, 0.0, 1.0)*/) {
     if (!HasNormals()) {
-        utility::LogError(
+        utility::LogThrowError(
                 "[OrientNormalsToAlignWithDirection] No normals in the "
                 "PointCloud. Call EstimateNormals() first.");
     }
@@ -391,7 +391,7 @@ void PointCloud::OrientNormalsToAlignWithDirection(
 void PointCloud::OrientNormalsTowardsCameraLocation(
         const Eigen::Vector3d &camera_location /* = Eigen::Vector3d::Zero()*/) {
     if (!HasNormals()) {
-        utility::LogError(
+        utility::LogThrowError(
                 "[OrientNormalsTowardsCameraLocation] No normals in the "
                 "PointCloud. Call EstimateNormals() first.");
     }
@@ -416,7 +416,7 @@ void PointCloud::OrientNormalsTowardsCameraLocation(
 
 void PointCloud::OrientNormalsConsistentTangentPlane(size_t k) {
     if (!HasNormals()) {
-        utility::LogError(
+        utility::LogThrowError(
                 "[OrientNormalsConsistentTangentPlane] No normals in the "
                 "PointCloud. Call EstimateNormals() first.");
     }

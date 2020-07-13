@@ -147,7 +147,7 @@ protected:
 
     void AssertMode(TensorKeyMode mode) const {
         if (mode != mode_) {
-            utility::LogError("Wrong TensorKeyMode.");
+            utility::LogThrowError("Wrong TensorKeyMode.");
         }
     }
 

@@ -81,7 +81,7 @@ public:
                 byte_size = 1;
                 break;
             default:
-                utility::LogError("Unsupported data type");
+                utility::LogThrowError("Unsupported data type");
         }
         return byte_size;
     }
@@ -91,7 +91,7 @@ public:
     /// exception.
     template <typename T>
     static inline Dtype FromType() {
-        utility::LogError("Unsupported data type");
+        utility::LogThrowError("Unsupported data type");
         return Dtype::Undefined;
     }
 
@@ -120,7 +120,7 @@ public:
                 str = "Bool";
                 break;
             default:
-                utility::LogError("Unsupported data type");
+                utility::LogThrowError("Unsupported data type");
         }
         return str;
     }

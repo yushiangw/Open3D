@@ -131,13 +131,13 @@ int main(int argc, char *argv[]) {
 
         if (io::WritePointCloud(filename_xyz, pointcloud)) {
             utility::LogInfo("Successfully wrote {}",
-        filename_xyz.c_str()); } else { utility::LogError("Failed to write
+        filename_xyz.c_str()); } else { utility::LogThrowError("Failed to write
         {}", filename_xyz);
         }
 
         if (io::WritePointCloud(filename_ply, pointcloud_copy)) {
             utility::LogInfo("Successfully wrote {}",
-        filename_ply); } else { utility::LogError("Failed to write
+        filename_ply); } else { utility::LogThrowError("Failed to write
         {}", filename_ply);
         }
          */

@@ -35,7 +35,7 @@ namespace geometry {
 std::tuple<std::shared_ptr<TetraMesh>, std::vector<size_t>>
 TetraMesh::CreateFromPointCloud(const PointCloud& point_cloud) {
     if (point_cloud.points_.size() < 4) {
-        utility::LogError(
+        utility::LogThrowError(
                 "[CreateFromPointCloud] not enough points to create a "
                 "tetrahedral mesh.");
     }

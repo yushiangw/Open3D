@@ -72,7 +72,8 @@ std::vector<int> HalfEdgeTriangleMesh::BoundaryHalfEdgesFromVertex(
     const HalfEdge &init_he = half_edges_[init_he_index];
 
     if (!init_he.IsBoundary()) {
-        utility::LogError("The vertex {:d} is not on boundary.", vertex_index);
+        utility::LogThrowError("The vertex {:d} is not on boundary.",
+                               vertex_index);
     }
 
     std::vector<int> boundary_half_edge_indices;
@@ -198,7 +199,7 @@ HalfEdgeTriangleMesh::CreateFromTriangleMesh(const TriangleMesh &mesh) {
                     vertex_indices_to_half_edge_index.end() ||
             vertex_indices_to_half_edge_index.find(he_2.vertex_indices_) !=
                     vertex_indices_to_half_edge_index.end()) {
-            utility::LogError(
+            utility::LogThrowError(
                     "ComputeHalfEdges failed. Duplicated half-edges.");
         }
 
@@ -255,7 +256,7 @@ HalfEdgeTriangleMesh::CreateFromTriangleMesh(const TriangleMesh &mesh) {
             }
         }
         if (num_boundaries > 1) {
-            utility::LogError("ComputeHalfEdges failed. Invalid vertex.");
+            utility::LogThrowError("ComputeHalfEdges failed. Invalid vertex.");
         }
         // If there is a boundary edge, start from that; otherwise start
         // with any half-edge (default 0) started from this vertex.

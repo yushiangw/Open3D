@@ -102,7 +102,7 @@ std::shared_ptr<geometry::RGBDImage> AzureKinectRecorder::RecordFrame(
     if (capture != nullptr && is_record_created_ && write) {
         if (K4A_FAILED(k4a_plugin::k4a_record_write_capture(recording_,
                                                             capture))) {
-            utility::LogError("Unable to write to capture");
+            utility::LogThrowError("Unable to write to capture");
         }
     }
 

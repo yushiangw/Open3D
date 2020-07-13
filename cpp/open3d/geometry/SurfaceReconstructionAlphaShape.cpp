@@ -114,7 +114,7 @@ std::shared_ptr<TriangleMesh> TriangleMesh::CreateFromPointCloudAlphaShape(
         double dz = tmp.determinant();
         // clang-format on
         if (a == 0) {
-            utility::LogError(
+            utility::LogThrowError(
                     "[CreateFromPointCloudAlphaShape] invalid tetra in "
                     "TetraMesh");
         }

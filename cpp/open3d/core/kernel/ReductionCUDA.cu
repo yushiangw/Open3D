@@ -881,12 +881,12 @@ public:
     template <typename func_t, typename scalar_t>
     void Run(const func_t& reduce_func, scalar_t identity) {
         if (indexer_.NumWorkloads() == 0) {
-            utility::LogError(
+            utility::LogThrowError(
                     "0-sized input should be handled outside of the reudction "
                     "engine.");
         }
         if (indexer_.NumInputs() != 1) {
-            utility::LogError("Reduction op must have exactly one input.");
+            utility::LogThrowError("Reduction op must have exactly one input.");
         }
 
         OPEN3D_ASSERT_HOST_DEVICE_LAMBDA(func_t);
@@ -894,7 +894,7 @@ public:
         using arg1_t = typename BinaryFunctionTraits<func_t>::arg1_t;
         if (!std::is_same<scalar_t, arg0_t>::value ||
             !std::is_same<scalar_t, arg1_t>::value) {
-            utility::LogError(
+            utility::LogThrowError(
                     "Function input type must match with the identity's type.");
         }
 
@@ -1039,7 +1039,7 @@ void ReductionCUDA(const Tensor& src,
                     break;
                 case ReductionOpCode::Min:
                     if (indexer.NumWorkloads() == 0) {
-                        utility::LogError(
+                        utility::LogThrowError(
                                 "Zero-size Tensor does not suport Min.");
                     } else {
                         re.Run([] OPEN3D_HOST_DEVICE(scalar_t a, scalar_t b)
@@ -1050,7 +1050,7 @@ void ReductionCUDA(const Tensor& src,
                     break;
                 case ReductionOpCode::Max:
                     if (indexer.NumWorkloads() == 0) {
-                        utility::LogError(
+                        utility::LogThrowError(
                                 "Zero-size Tensor does not suport Max.");
                     } else {
                         re.Run([] OPEN3D_HOST_DEVICE(scalar_t a, scalar_t b)
@@ -1060,13 +1060,14 @@ void ReductionCUDA(const Tensor& src,
                     }
                     break;
                 default:
-                    utility::LogError("Unsupported op code.");
+                    utility::LogThrowError("Unsupported op code.");
                     break;
             }
         });
     } else if (s_arg_reduce_ops.find(op_code) != s_arg_reduce_ops.end()) {
         if (dst.GetDtype() != Dtype::Int64) {
-            utility::LogError("Arg-reduction must have int64 output dtype.");
+            utility::LogThrowError(
+                    "Arg-reduction must have int64 output dtype.");
         }
         Indexer indexer({src}, dst, DtypePolicy::INPUT_SAME, dims);
         CUDAReductionEngine re(indexer);
@@ -1076,7 +1077,7 @@ void ReductionCUDA(const Tensor& src,
             switch (op_code) {
                 case ReductionOpCode::ArgMin:
                     if (indexer.NumWorkloads() == 0) {
-                        utility::LogError(
+                        utility::LogThrowError(
                                 "Zero-size Tensor does not suport ArgMin.");
                     } else {
                         re.Run([] OPEN3D_HOST_DEVICE(scalar_t a, scalar_t b)
@@ -1087,7 +1088,7 @@ void ReductionCUDA(const Tensor& src,
                     break;
                 case ReductionOpCode::ArgMax:
                     if (indexer.NumWorkloads() == 0) {
-                        utility::LogError(
+                        utility::LogThrowError(
                                 "Zero-size Tensor does not suport ArgMax.");
                     } else {
                         re.Run([] OPEN3D_HOST_DEVICE(scalar_t a, scalar_t b)
@@ -1097,18 +1098,18 @@ void ReductionCUDA(const Tensor& src,
                     }
                     break;
                 default:
-                    utility::LogError("Unsupported op code.");
+                    utility::LogThrowError("Unsupported op code.");
                     break;
             }
         });
     } else if (s_boolean_reduce_ops.find(op_code) !=
                s_boolean_reduce_ops.end()) {
         if (src.GetDtype() != Dtype::Bool) {
-            utility::LogError(
+            utility::LogThrowError(
                     "Boolean reduction only supports boolean input tensor.");
         }
         if (dst.GetDtype() != Dtype::Bool) {
-            utility::LogError(
+            utility::LogThrowError(
                     "Boolean reduction only supports boolean output tensor.");
         }
         Indexer indexer({src}, dst, DtypePolicy::ALL_SAME, dims);
@@ -1134,11 +1135,11 @@ void ReductionCUDA(const Tensor& src,
                 }
                 break;
             default:
-                utility::LogError("Unsupported op code.");
+                utility::LogThrowError("Unsupported op code.");
                 break;
         }
     } else {
-        utility::LogError("Unsupported op code.");
+        utility::LogThrowError("Unsupported op code.");
     }
 }
 

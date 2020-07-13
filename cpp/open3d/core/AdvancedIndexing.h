@@ -144,7 +144,7 @@ public:
                     AdvancedIndexerMode mode)
         : mode_(mode) {
         if (indexed_shape.size() != indexed_strides.size()) {
-            utility::LogError(
+            utility::LogThrowError(
                     "Internal error: indexed_shape's ndim {} does not equal to "
                     "indexd_strides' ndim {}",
                     indexed_shape.size(), indexed_strides.size());
@@ -163,7 +163,7 @@ public:
 
         // Fill shape and strides
         if (num_indices_ != static_cast<int64_t>(indexed_strides.size())) {
-            utility::LogError(
+            utility::LogThrowError(
                     "Internal error: indexed_shape's ndim {} does not equal to "
                     "indexd_strides' ndim {}",
                     num_indices_, indexed_strides.size());
@@ -175,7 +175,7 @@ public:
 
         // Check dtypes
         if (src.GetDtype() != dst.GetDtype()) {
-            utility::LogError(
+            utility::LogThrowError(
                     "src's dtype {} is not the same as dst's dtype {}.",
                     DtypeUtil::ToString(src.GetDtype()),
                     DtypeUtil::ToString(dst.GetDtype()));

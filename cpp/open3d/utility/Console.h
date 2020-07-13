@@ -46,7 +46,8 @@ namespace open3d {
 namespace utility {
 
 enum class VerbosityLevel {
-    /// LogError throws now a runtime_error with the given error message. This
+    /// LogThrowError throws now a runtime_error with the given error message.
+    /// This
     /// should be used if there is no point in continuing the given algorithm at
     /// some point and the error is not returned in another way (e.g., via a
     /// bool/int as return value).
@@ -175,7 +176,8 @@ inline VerbosityLevel GetVerbosityLevel() {
 }
 
 template <typename... Args>
-inline void LogError[[noreturn]](const char *format, const Args &... args) {
+inline void LogThrowError[[noreturn]](const char *format,
+                                      const Args &... args) {
     Logger::i().VError(format, fmt::make_format_args(args...));
 }
 

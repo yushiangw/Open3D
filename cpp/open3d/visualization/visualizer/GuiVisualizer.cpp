@@ -1894,8 +1894,8 @@ void GuiVisualizer::LoadGeometry(const std::string &path) {
                                            {0.0, 0.0});
             }
         } else {
-            // LogError throws an exception, which we don't want, because this
-            // might be a point cloud.
+            // LogThrowError throws an exception, which we don't want, because
+            // this might be a point cloud.
             utility::LogInfo("{} appears to be a point cloud", path.c_str());
             mesh.reset();
         }

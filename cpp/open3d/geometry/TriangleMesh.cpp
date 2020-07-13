@@ -97,7 +97,7 @@ TriangleMesh &TriangleMesh::operator+=(const TriangleMesh &mesh) {
         ComputeAdjacencyList();
     }
     if (HasTriangleUvs() || HasTextures() || HasTriangleMaterialIds()) {
-        utility::LogError(
+        utility::LogThrowError(
                 "[TriangleMesh] copy of uvs and texture and per-triangle "
                 "material ids is not implemented "
                 "yet");
@@ -502,10 +502,10 @@ std::shared_ptr<PointCloud> TriangleMesh::SamplePointsUniformly(
         bool use_triangle_normal /* = false */,
         int seed /* = -1 */) {
     if (number_of_points <= 0) {
-        utility::LogError("[SamplePointsUniformly] number_of_points <= 0");
+        utility::LogThrowError("[SamplePointsUniformly] number_of_points <= 0");
     }
     if (triangles_.size() == 0) {
-        utility::LogError(
+        utility::LogThrowError(
                 "[SamplePointsUniformly] input mesh has no triangles");
     }
 
@@ -524,19 +524,20 @@ std::shared_ptr<PointCloud> TriangleMesh::SamplePointsPoissonDisk(
         bool use_triangle_normal /* = false */,
         int seed /* = -1 */) {
     if (number_of_points <= 0) {
-        utility::LogError("[SamplePointsPoissonDisk] number_of_points <= 0");
+        utility::LogThrowError(
+                "[SamplePointsPoissonDisk] number_of_points <= 0");
     }
     if (triangles_.size() == 0) {
-        utility::LogError(
+        utility::LogThrowError(
                 "[SamplePointsPoissonDisk] input mesh has no triangles");
     }
     if (pcl_init == nullptr && init_factor < 1) {
-        utility::LogError(
+        utility::LogThrowError(
                 "[SamplePointsPoissonDisk] either pass pcl_init with #points "
                 "> number_of_points or init_factor > 1");
     }
     if (pcl_init != nullptr && pcl_init->points_.size() < number_of_points) {
-        utility::LogError(
+        utility::LogThrowError(
                 "[SamplePointsPoissonDisk] either pass pcl_init with #points "
                 "> number_of_points, or init_factor > 1");
     }
@@ -1464,7 +1465,8 @@ void TriangleMesh::RemoveTrianglesByIndex(
 void TriangleMesh::RemoveTrianglesByMask(
         const std::vector<bool> &triangle_mask) {
     if (triangle_mask.size() != triangles_.size()) {
-        utility::LogError("triangle_mask has a different size than triangles_");
+        utility::LogThrowError(
+                "triangle_mask has a different size than triangles_");
     }
 
     bool has_tri_normal = HasTriangleNormals();
@@ -1503,7 +1505,8 @@ void TriangleMesh::RemoveVerticesByIndex(
 
 void TriangleMesh::RemoveVerticesByMask(const std::vector<bool> &vertex_mask) {
     if (vertex_mask.size() != vertices_.size()) {
-        utility::LogError("vertex_mask has a different size than vertices_");
+        utility::LogThrowError(
+                "vertex_mask has a different size than vertices_");
     }
 
     bool has_normal = HasVertexNormals();
@@ -1608,7 +1611,7 @@ std::shared_ptr<TriangleMesh> TriangleMesh::SelectByIndex(
 std::shared_ptr<TriangleMesh> TriangleMesh::Crop(
         const AxisAlignedBoundingBox &bbox) const {
     if (bbox.IsEmpty()) {
-        utility::LogError(
+        utility::LogThrowError(
                 "[CropTriangleMesh] AxisAlignedBoundingBox either has zeros "
                 "size, or has wrong bounds.");
     }
@@ -1618,7 +1621,7 @@ std::shared_ptr<TriangleMesh> TriangleMesh::Crop(
 std::shared_ptr<TriangleMesh> TriangleMesh::Crop(
         const OrientedBoundingBox &bbox) const {
     if (bbox.IsEmpty()) {
-        utility::LogError(
+        utility::LogThrowError(
                 "[CropTriangleMesh] AxisAlignedBoundingBox either has zeros "
                 "size, or has wrong bounds.");
         return std::make_shared<TriangleMesh>();

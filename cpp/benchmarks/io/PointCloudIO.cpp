@@ -40,7 +40,8 @@ namespace {
 template <class T>
 double AverageDistance(const std::vector<T> &a, const std::vector<T> &b) {
     if (a.size() != b.size()) {
-        utility::LogError("vectors different size {} {}", a.size(), b.size());
+        utility::LogThrowError("vectors different size {} {}", a.size(),
+                               b.size());
     }
     if (a.size() == 0) {
         return 0.;
@@ -124,16 +125,16 @@ public:
         if (!WritePointCloud(args.filename, pc,
                              {bool(args.write_ascii), bool(args.compressed),
                               print_progress})) {
-            utility::LogError("Failed to write to {}", args.filename);
+            utility::LogThrowError("Failed to write to {}", args.filename);
         }
         geometry::PointCloud pc2;
         if (!ReadPointCloud(args.filename, pc2,
                             {"auto", false, false, print_progress})) {
-            utility::LogError("Failed to read from {}", args.filename);
+            utility::LogThrowError("Failed to read from {}", args.filename);
         }
         auto CheckLE = [](double a, double b) {
             if (a <= b) return;
-            utility::LogError("Error too high: {} {}", a, b);
+            utility::LogThrowError("Error too high: {} {}", a, b);
         };
 
         const double pointsMaxError =

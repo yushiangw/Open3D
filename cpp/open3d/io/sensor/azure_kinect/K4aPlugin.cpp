@@ -88,30 +88,30 @@ static HINSTANCE GetDynamicLibHandle(const std::string& lib_name) {
             }
         }
         if (handle == NULL) {
-            utility::LogError("Cannot load {}", lib_name);
+            utility::LogThrowError("Cannot load {}", lib_name);
         }
         map_lib_name_to_handle[lib_name] = handle;
     }
     return map_lib_name_to_handle.at(lib_name);
 }
 
-#define DEFINE_BRIDGED_FUNC_WITH_COUNT(lib_name, return_type, f_name, \
-                                       num_args, ...)                 \
-    return_type f_name(EXTRACT_TYPES_PARAMS(num_args, __VA_ARGS__)) { \
-        typedef return_type (*f_type)(                                \
-                EXTRACT_TYPES_PARAMS(num_args, __VA_ARGS__));         \
-        static f_type f = nullptr;                                    \
-                                                                      \
-        if (!f) {                                                     \
-            f = (f_type)GetProcAddress(GetDynamicLibHandle(lib_name), \
-                                       #f_name);                      \
-            if (f == nullptr) {                                       \
-                utility::LogError("Cannot load func {}", #f_name);    \
-            } else {                                                  \
-                utility::LogDebug("Loaded func {}", #f_name);         \
-            }                                                         \
-        }                                                             \
-        return f(EXTRACT_PARAMS(num_args, __VA_ARGS__));              \
+#define DEFINE_BRIDGED_FUNC_WITH_COUNT(lib_name, return_type, f_name,   \
+                                       num_args, ...)                   \
+    return_type f_name(EXTRACT_TYPES_PARAMS(num_args, __VA_ARGS__)) {   \
+        typedef return_type (*f_type)(                                  \
+                EXTRACT_TYPES_PARAMS(num_args, __VA_ARGS__));           \
+        static f_type f = nullptr;                                      \
+                                                                        \
+        if (!f) {                                                       \
+            f = (f_type)GetProcAddress(GetDynamicLibHandle(lib_name),   \
+                                       #f_name);                        \
+            if (f == nullptr) {                                         \
+                utility::LogThrowError("Cannot load func {}", #f_name); \
+            } else {                                                    \
+                utility::LogDebug("Loaded func {}", #f_name);           \
+            }                                                           \
+        }                                                               \
+        return f(EXTRACT_PARAMS(num_args, __VA_ARGS__));                \
     }
 
 #else
@@ -152,7 +152,7 @@ static void* GetDynamicLibHandle(const std::string& lib_name) {
             }
         }
         if (!handle) {
-            utility::LogError("Cannot load {}", dlerror());
+            utility::LogThrowError("Cannot load {}", dlerror());
         } else {
             utility::LogDebug("Loaded {}", full_path);
             struct link_map* map = nullptr;
@@ -171,20 +171,21 @@ static void* GetDynamicLibHandle(const std::string& lib_name) {
     return map_lib_name_to_handle.at(lib_name);
 }
 
-#define DEFINE_BRIDGED_FUNC_WITH_COUNT(lib_name, return_type, f_name,        \
-                                       num_args, ...)                        \
-    return_type f_name(EXTRACT_TYPES_PARAMS(num_args, __VA_ARGS__)) {        \
-        typedef return_type (*f_type)(                                       \
-                EXTRACT_TYPES_PARAMS(num_args, __VA_ARGS__));                \
-        static f_type f = nullptr;                                           \
-                                                                             \
-        if (!f) {                                                            \
-            f = (f_type)dlsym(GetDynamicLibHandle(lib_name), #f_name);       \
-            if (!f) {                                                        \
-                utility::LogError("Cannot load {}: {}", #f_name, dlerror()); \
-            }                                                                \
-        }                                                                    \
-        return f(EXTRACT_PARAMS(num_args, __VA_ARGS__));                     \
+#define DEFINE_BRIDGED_FUNC_WITH_COUNT(lib_name, return_type, f_name,  \
+                                       num_args, ...)                  \
+    return_type f_name(EXTRACT_TYPES_PARAMS(num_args, __VA_ARGS__)) {  \
+        typedef return_type (*f_type)(                                 \
+                EXTRACT_TYPES_PARAMS(num_args, __VA_ARGS__));          \
+        static f_type f = nullptr;                                     \
+                                                                       \
+        if (!f) {                                                      \
+            f = (f_type)dlsym(GetDynamicLibHandle(lib_name), #f_name); \
+            if (!f) {                                                  \
+                utility::LogThrowError("Cannot load {}: {}", #f_name,  \
+                                       dlerror());                     \
+            }                                                          \
+        }                                                              \
+        return f(EXTRACT_PARAMS(num_args, __VA_ARGS__));               \
     }
 
 #endif

@@ -98,7 +98,7 @@ public:
                                              func_t element_kernel,
                                              scalar_t identity) {
         if (indexer.NumOutputElements() > 1) {
-            utility::LogError(
+            utility::LogThrowError(
                     "Internal error: two-pass reduction only works for "
                     "single-output reduction ops.");
         }
@@ -149,7 +149,7 @@ public:
             }
         }
         if (best_dim == -1) {
-            utility::LogError(
+            utility::LogThrowError(
                     "Internal error: all dims are reduction dims, use "
                     "LaunchReductionKernelTwoPass instead.");
         }

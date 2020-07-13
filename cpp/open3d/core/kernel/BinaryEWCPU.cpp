@@ -197,7 +197,7 @@ void BinaryEWCPU(const Tensor& lhs,
                 LaunchBoolBinaryEWCPUKernel<scalar_t, bool>(lhs, rhs, dst,
                                                             op_code, indexer);
             } else {
-                utility::LogError(
+                utility::LogThrowError(
                         "Boolean op's output type must be boolean or the "
                         "same type as the input.");
             }

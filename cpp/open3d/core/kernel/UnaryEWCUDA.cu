@@ -146,8 +146,8 @@ void CopyCUDA(const Tensor& src, Tensor& dst) {
             dst.CopyFrom(src.Contiguous().Copy(dst_device));
         }
     } else {
-        utility::LogError("Wrong device type {} -> {}", src_device.ToString(),
-                          dst_device.ToString());
+        utility::LogThrowError("Wrong device type {} -> {}",
+                               src_device.ToString(), dst_device.ToString());
     }
 }
 
@@ -158,7 +158,7 @@ void UnaryEWCUDA(const Tensor& src, Tensor& dst, UnaryEWOpCode op_code) {
 
     auto assert_dtype_is_float = [](Dtype dtype) -> void {
         if (dtype != Dtype::Float32 && dtype != Dtype::Float64) {
-            utility::LogError(
+            utility::LogThrowError(
                     "Only supports Float32 and Float64, but {} is used.",
                     DtypeUtil::ToString(dtype));
         }
@@ -184,7 +184,7 @@ void UnaryEWCUDA(const Tensor& src, Tensor& dst, UnaryEWOpCode op_code) {
                                                                         dst);
                         });
             } else {
-                utility::LogError(
+                utility::LogThrowError(
                         "Boolean op's output type must be boolean or the "
                         "same type as the input.");
             }
@@ -240,7 +240,8 @@ void UnaryEWCUDA(const Tensor& src, Tensor& dst, UnaryEWOpCode op_code) {
                             });
                     break;
                 default:
-                    utility::LogError("Unimplemented op_code for UnaryEWCUDA");
+                    utility::LogThrowError(
+                            "Unimplemented op_code for UnaryEWCUDA");
                     break;
             }
         });

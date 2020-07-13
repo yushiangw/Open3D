@@ -57,7 +57,7 @@ void TryGLVersion(int major,
 
     glfwSetErrorCallback(GLFWErrorCallback);
     if (!glfwInit()) {
-        utility::LogError("Failed to initialize GLFW");
+        utility::LogThrowError("Failed to initialize GLFW");
     }
 
     glfwWindowHint(GLFW_SAMPLES, 4);

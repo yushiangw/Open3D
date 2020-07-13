@@ -151,14 +151,14 @@ RegistrationResult RegistrationICP(
         const ICPConvergenceCriteria
                 &criteria /* = ICPConvergenceCriteria()*/) {
     if (max_correspondence_distance <= 0.0) {
-        utility::LogError("Invalid max_correspondence_distance.");
+        utility::LogThrowError("Invalid max_correspondence_distance.");
     }
     if ((estimation.GetTransformationEstimationType() ==
                  TransformationEstimationType::PointToPlane ||
          estimation.GetTransformationEstimationType() ==
                  TransformationEstimationType::ColoredICP) &&
         (!source.HasNormals() || !target.HasNormals())) {
-        utility::LogError(
+        utility::LogThrowError(
                 "TransformationEstimationPointToPlane and "
                 "TransformationEstimationColoredICP "
                 "require pre-computed normal vectors.");

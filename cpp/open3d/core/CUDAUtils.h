@@ -67,8 +67,8 @@ inline void __OPEN3D_CUDA_CHECK(cudaError_t err,
                                 const char* file,
                                 const int line) {
     if (err != cudaSuccess) {
-        utility::LogError("{}:{} CUDA runtime error: {}", file, line,
-                          cudaGetErrorString(err));
+        utility::LogThrowError("{}:{} CUDA runtime error: {}", file, line,
+                               cudaGetErrorString(err));
     }
 }
 
@@ -77,8 +77,8 @@ inline void __OPEN3D_GET_LAST_CUDA_ERROR(const char* message,
                                          const int line) {
     cudaError_t err = cudaGetLastError();
     if (err != cudaSuccess) {
-        utility::LogError("{}:{} {}: OPEN3D_GET_LAST_CUDA_ERROR(): {}", file,
-                          line, message, cudaGetErrorString(err));
+        utility::LogThrowError("{}:{} {}: OPEN3D_GET_LAST_CUDA_ERROR(): {}",
+                               file, line, message, cudaGetErrorString(err));
     }
 }
 
@@ -87,7 +87,7 @@ inline int GetCUDACurrentDeviceTextureAlignment() {
     int device = 0;
     cudaError_t err = cudaGetDevice(&device);
     if (err != cudaSuccess) {
-        utility::LogError(
+        utility::LogThrowError(
                 "GetCUDACurrentDeviceTextureAlignment(): cudaGetDevice failed "
                 "with {}",
                 cudaGetErrorString(err));
@@ -96,7 +96,7 @@ inline int GetCUDACurrentDeviceTextureAlignment() {
     int value = 0;
     err = cudaDeviceGetAttribute(&value, cudaDevAttrTextureAlignment, device);
     if (err != cudaSuccess) {
-        utility::LogError(
+        utility::LogThrowError(
                 "GetCUDACurrentDeviceTextureAlignment(): "
                 "cudaDeviceGetAttribute failed with {}",
                 cudaGetErrorString(err));

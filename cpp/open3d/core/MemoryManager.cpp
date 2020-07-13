@@ -54,14 +54,14 @@ void MemoryManager::Memcpy(void* dst_ptr,
     if (num_bytes == 0) {
         return;
     } else if (src_ptr == nullptr || dst_ptr == nullptr) {
-        utility::LogError("src_ptr and dst_ptr cannot be nullptr.");
+        utility::LogThrowError("src_ptr and dst_ptr cannot be nullptr.");
     }
 
     if ((dst_device.GetType() != Device::DeviceType::CPU &&
          dst_device.GetType() != Device::DeviceType::CUDA) ||
         (src_device.GetType() != Device::DeviceType::CPU &&
          src_device.GetType() != Device::DeviceType::CUDA)) {
-        utility::LogError("MemoryManager::Memcpy: Unimplemented device.");
+        utility::LogThrowError("MemoryManager::Memcpy: Unimplemented device.");
     }
 
     std::shared_ptr<DeviceMemoryManager> device_mm;
@@ -108,7 +108,7 @@ std::shared_ptr<DeviceMemoryManager> MemoryManager::GetDeviceMemoryManager(
             };
     if (map_device_type_to_memory_manager.find(device.GetType()) ==
         map_device_type_to_memory_manager.end()) {
-        utility::LogError(
+        utility::LogThrowError(
                 "MemoryManager::GetDeviceMemoryManager: Unimplemented device");
     }
     return map_device_type_to_memory_manager.at(device.GetType());

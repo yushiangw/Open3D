@@ -50,7 +50,7 @@ core::Dtype ArrayFormatToDtype(const std::string& format) {
     } else if (format == py::format_descriptor<bool>::format()) {
         return core::Dtype::Bool;
     } else {
-        utility::LogError("Unsupported data type.");
+        utility::LogThrowError("Unsupported data type.");
     }
 }
 
@@ -68,7 +68,7 @@ std::string DtypeToArrayFormat(const core::Dtype& dtype) {
     } else if (dtype == core::Dtype::Bool) {
         return py::format_descriptor<bool>::format();
     } else {
-        utility::LogError("Unsupported data type.");
+        utility::LogThrowError("Unsupported data type.");
     }
 }
 

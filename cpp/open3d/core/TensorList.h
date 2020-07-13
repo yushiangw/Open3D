@@ -99,7 +99,7 @@ public:
     TensorList(InputIterator begin, InputIterator end) {
         int64_t size = std::distance(begin, end);
         if (size == 0) {
-            utility::LogError(
+            utility::LogThrowError(
                     "Empty input tensors cannot initialize a tensorlist.");
         }
 
@@ -111,7 +111,7 @@ public:
         element_shape_ = begin->GetShape();
         std::for_each(begin, end, [&](const Tensor& tensor) -> void {
             if (tensor.GetShape() != element_shape_) {
-                utility::LogError(
+                utility::LogThrowError(
                         "Tensors must have the same shape {}, but got {}.",
                         element_shape_, tensor.GetShape());
             }
@@ -121,7 +121,7 @@ public:
         Dtype dtype = begin->GetDtype();
         std::for_each(begin, end, [&](const Tensor& tensor) -> void {
             if (tensor.GetDtype() != dtype) {
-                utility::LogError(
+                utility::LogThrowError(
                         "Tensors must have the same dtype {}, but got {}.",
                         DtypeUtil::ToString(dtype),
                         DtypeUtil::ToString(tensor.GetDtype()));
@@ -132,7 +132,7 @@ public:
         Device device = begin->GetDevice();
         std::for_each(begin, end, [&](const Tensor& tensor) -> void {
             if (tensor.GetDevice() != device) {
-                utility::LogError(
+                utility::LogThrowError(
                         "Tensors must have the same device {}, but got {}.",
                         device.ToString(), tensor.GetDevice().ToString());
             }

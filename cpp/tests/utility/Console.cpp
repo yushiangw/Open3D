@@ -30,8 +30,8 @@
 namespace open3d {
 namespace tests {
 
-TEST(Logger, LogError) {
-    EXPECT_THROW(utility::LogError("Example exeption message"),
+TEST(Logger, LogThrowError) {
+    EXPECT_THROW(utility::LogThrowError("Example exeption message"),
                  std::runtime_error);
 }
 

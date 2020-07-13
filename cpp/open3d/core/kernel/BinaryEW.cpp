@@ -53,8 +53,9 @@ void BinaryEW(const Tensor& lhs,
     for (auto device :
          std::vector<Device>({rhs.GetDevice(), dst.GetDevice()})) {
         if (lhs.GetDevice() != device) {
-            utility::LogError("Device mismatch {} != {}.",
-                              lhs.GetDevice().ToString(), device.ToString());
+            utility::LogThrowError("Device mismatch {} != {}.",
+                                   lhs.GetDevice().ToString(),
+                                   device.ToString());
         }
     }
 
@@ -62,7 +63,7 @@ void BinaryEW(const Tensor& lhs,
     const SizeVector broadcasted_input_shape =
             shape_util::BroadcastedShape(lhs.GetShape(), rhs.GetShape());
     if (broadcasted_input_shape != dst.GetShape()) {
-        utility::LogError(
+        utility::LogThrowError(
                 "The broadcasted input shape {} does not match the output "
                 "shape {}.",
                 broadcasted_input_shape, dst.GetShape());
@@ -75,10 +76,11 @@ void BinaryEW(const Tensor& lhs,
 #ifdef BUILD_CUDA_MODULE
         BinaryEWCUDA(lhs, rhs, dst, op_code);
 #else
-        utility::LogError("Not compiled with CUDA, but CUDA device is used.");
+        utility::LogThrowError(
+                "Not compiled with CUDA, but CUDA device is used.");
 #endif
     } else {
-        utility::LogError("BinaryEW: Unimplemented device");
+        utility::LogThrowError("BinaryEW: Unimplemented device");
     }
 }
 

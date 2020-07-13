@@ -68,7 +68,7 @@ public:
         : Tensor(shape, dtype, device) {
         // Check number of elements
         if (static_cast<int64_t>(init_vals.size()) != shape_.NumElements()) {
-            utility::LogError(
+            utility::LogThrowError(
                     "Tensor initialization values' size {} does not match the "
                     "shape {}",
                     init_vals.size(), shape_.NumElements());
@@ -127,7 +127,7 @@ public:
     template <typename T>
     Tensor& operator=(const T& v) && {
         if (shape_.size() != 0) {
-            utility::LogError(
+            utility::LogThrowError(
                     "Assignment with scalar only works for scalar Tensor of "
                     "shape ()");
         }
@@ -386,7 +386,8 @@ public:
     template <typename T>
     T Item() const {
         if (shape_.size() != 0) {
-            utility::LogError("Item only works for scalar Tensor of shape ()");
+            utility::LogThrowError(
+                    "Item only works for scalar Tensor of shape ()");
         }
         AssertTemplateDtype<T>();
         T value;
@@ -807,14 +808,15 @@ public:
     template <typename T>
     void AssertTemplateDtype() const {
         if (DtypeUtil::FromType<T>() != dtype_) {
-            utility::LogError(
+            utility::LogThrowError(
                     "Requested values have type {} but Tensor has type {}",
                     DtypeUtil::ToString(DtypeUtil::FromType<T>()),
                     DtypeUtil::ToString(dtype_));
         }
         if (DtypeUtil::ByteSize(dtype_) != sizeof(T)) {
-            utility::LogError("Internal error: element size mismatch {} != {}",
-                              DtypeUtil::ByteSize(dtype_), sizeof(T));
+            utility::LogThrowError(
+                    "Internal error: element size mismatch {} != {}",
+                    DtypeUtil::ByteSize(dtype_), sizeof(T));
         }
     }
 
@@ -884,7 +886,7 @@ inline Tensor::Tensor(const std::vector<bool>& init_vals,
     : Tensor(shape, dtype, device) {
     // Check number of elements
     if (static_cast<int64_t>(init_vals.size()) != shape_.NumElements()) {
-        utility::LogError(
+        utility::LogThrowError(
                 "Tensor initialization values' size {} does not match the "
                 "shape {}",
                 init_vals.size(), shape_.NumElements());
@@ -923,7 +925,7 @@ inline std::vector<bool> Tensor::ToFlatVector() const {
 template <>
 inline bool Tensor::Item() const {
     if (shape_.size() != 0) {
-        utility::LogError("Item only works for scalar Tensor of shape ()");
+        utility::LogThrowError("Item only works for scalar Tensor of shape ()");
     }
     AssertTemplateDtype<bool>();
     uint8_t value;

@@ -390,7 +390,7 @@ void ExtractMesh(
         std::vector<CoredVertexIndex<node_index_type>> triangle;
         mesh->nextPolygon(triangle);
         if (triangle.size() != 3) {
-            open3d::utility::LogError("got polygon");
+            open3d::utility::LogThrowError("got polygon");
         } else {
             out_mesh->triangles_.push_back(Eigen::Vector3i(
                     triangle[0].idx, triangle[1].idx, triangle[2].idx));
@@ -505,7 +505,7 @@ void Execute(const open3d::geometry::PointCloud& pcd,
 
     int kernelDepth = depth - 2;
     if (kernelDepth < 0) {
-        utility::LogError(
+        utility::LogThrowError(
                 "[CreateFromPointCloudPoisson] depth (={}) has to be >= 2",
                 depth);
     }
@@ -739,7 +739,8 @@ TriangleMesh::CreateFromPointCloudPoisson(const PointCloud& pcd,
             FEMSigs;
 
     if (!pcd.HasNormals()) {
-        utility::LogError("[CreateFromPointCloudPoisson] pcd has no normals");
+        utility::LogThrowError(
+                "[CreateFromPointCloudPoisson] pcd has no normals");
     }
 
     if (n_threads <= 0) {

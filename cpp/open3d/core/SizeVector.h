@@ -75,7 +75,7 @@ public:
                 this->begin(), this->end(), 1LL,
                 [this](const int64_t& lhs, const int64_t& rhs) -> int64_t {
                     if (lhs < 0 || rhs < 0) {
-                        utility::LogError(
+                        utility::LogThrowError(
                                 "Shape {} cannot contain negative dimensions.",
                                 this->ToString());
                     }

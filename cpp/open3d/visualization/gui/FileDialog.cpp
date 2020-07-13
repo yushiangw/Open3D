@@ -305,7 +305,7 @@ FileDialog::FileDialog(Mode mode, const char *title, const Theme &theme)
         if (this->impl_->on_cancel_) {
             this->impl_->on_cancel_();
         } else {
-            utility::LogError("FileDialog: need to call SetOnClicked()");
+            utility::LogThrowError("FileDialog: need to call SetOnClicked()");
         }
     });
     impl_->ok_->SetOnClicked([this]() { this->OnDone(); });
@@ -384,7 +384,7 @@ void FileDialog::OnDone() {
         auto name = this->impl_->filename_->GetText();
         this->impl_->on_done_((dir + "/" + name).c_str());
     } else {
-        utility::LogError("FileDialog: need to call SetOnDone()");
+        utility::LogThrowError("FileDialog: need to call SetOnDone()");
     }
 }
 

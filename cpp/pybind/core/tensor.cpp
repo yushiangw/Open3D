@@ -97,12 +97,12 @@ void pybind_core_tensor(py::module& m) {
     tensor.def("cuda",
                [](const core::Tensor& tensor, int device_id = 0) {
                    if (!core::cuda::IsAvailable()) {
-                       utility::LogError(
+                       utility::LogThrowError(
                                "CUDA is not available, cannot copy Tensor.");
                    }
                    if (device_id < 0 ||
                        device_id >= core::cuda::DeviceCount()) {
-                       utility::LogError(
+                       utility::LogThrowError(
                                "Invalid device_id {}, must satisfy 0 <= "
                                "device_id < {}",
                                device_id, core::cuda::DeviceCount());
@@ -118,7 +118,7 @@ void pybind_core_tensor(py::module& m) {
     // Buffer I/O for Numpy and DLPack(PyTorch)
     tensor.def("numpy", [](const core::Tensor& tensor) {
         if (tensor.GetDevice().GetType() != core::Device::DeviceType::CPU) {
-            utility::LogError(
+            utility::LogThrowError(
                     "Can only convert CPU Tensor to numpy. Copy "
                     "Tensor to CPU before converting to numpy.");
         }
@@ -224,7 +224,7 @@ void pybind_core_tensor(py::module& m) {
         DLManagedTensor* dl_managed_tensor =
                 static_cast<DLManagedTensor*>(data);
         if (!dl_managed_tensor) {
-            utility::LogError(
+            utility::LogThrowError(
                     "from_dlpack must receive "
                     "DLManagedTensor PyCapsule.");
         }

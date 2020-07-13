@@ -40,7 +40,7 @@ void Reduction(const Tensor& src,
     // all dimensions.
     if (s_arg_reduce_ops.find(op_code) != s_arg_reduce_ops.end()) {
         if (keepdim) {
-            utility::LogError("Arg-reduction keepdim must be false");
+            utility::LogThrowError("Arg-reduction keepdim must be false");
         }
         if (dims.size() != 1) {
             std::vector<bool> seen_dims(src.NumDims(), false);
@@ -49,7 +49,7 @@ void Reduction(const Tensor& src,
             }
             if (!std::all_of(seen_dims.begin(), seen_dims.end(),
                              [](bool seen) { return seen; })) {
-                utility::LogError(
+                utility::LogThrowError(
                         "Arg-reduction can only have 1 or all reduction "
                         "dimensions. However, dims = {}.",
                         dims);
@@ -62,12 +62,14 @@ void Reduction(const Tensor& src,
     SizeVector non_keepdim_shape =
             shape_util::ReductionShape(src.GetShape(), dims, false);
     if (keepdim && keepdim_shape != dst.GetShape()) {
-        utility::LogError("Expected output shape {} but got {}.",
-                          keepdim_shape.ToString(), dst.GetShape().ToString());
+        utility::LogThrowError("Expected output shape {} but got {}.",
+                               keepdim_shape.ToString(),
+                               dst.GetShape().ToString());
     }
     if (!keepdim && non_keepdim_shape != dst.GetShape()) {
-        utility::LogError("Expected output shape {} but got {}.",
-                          keepdim_shape.ToString(), dst.GetShape().ToString());
+        utility::LogThrowError("Expected output shape {} but got {}.",
+                               keepdim_shape.ToString(),
+                               dst.GetShape().ToString());
     }
 
     // Directly copy for non-reduction.
@@ -82,9 +84,9 @@ void Reduction(const Tensor& src,
     }
 
     if (src.GetDevice() != dst.GetDevice()) {
-        utility::LogError("Device mismatch {} != {}.",
-                          src.GetDevice().ToString(),
-                          dst.GetDevice().ToString());
+        utility::LogThrowError("Device mismatch {} != {}.",
+                               src.GetDevice().ToString(),
+                               dst.GetDevice().ToString());
     }
 
     Device::DeviceType device_type = src.GetDevice().GetType();
@@ -94,10 +96,11 @@ void Reduction(const Tensor& src,
 #ifdef BUILD_CUDA_MODULE
         ReductionCUDA(src, dst, dims, keepdim, op_code);
 #else
-        utility::LogError("Not compiled with CUDA, but CUDA device is used.");
+        utility::LogThrowError(
+                "Not compiled with CUDA, but CUDA device is used.");
 #endif
     } else {
-        utility::LogError("Unimplemented device.");
+        utility::LogThrowError("Unimplemented device.");
     }
 
     if (!keepdim) {

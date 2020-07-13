@@ -421,7 +421,7 @@ void CFile::Close() {
     if (file_) {
         if (fclose(file_)) {
             error_code_ = errno;
-            utility::LogError("fclose failed: {}", GetError());
+            utility::LogThrowError("fclose failed: {}", GetError());
         }
         file_ = nullptr;
     }
@@ -429,50 +429,50 @@ void CFile::Close() {
 
 int64_t CFile::CurPos() {
     if (!file_) {
-        utility::LogError("CFile::CurPos() called on a closed file");
+        utility::LogThrowError("CFile::CurPos() called on a closed file");
     }
     int64_t pos = ftell(file_);
     if (pos < 0) {
         error_code_ = errno;
-        utility::LogError("ftell failed: {}", GetError());
+        utility::LogThrowError("ftell failed: {}", GetError());
     }
     return pos;
 }
 
 int64_t CFile::GetFileSize() {
     if (!file_) {
-        utility::LogError("CFile::GetFileSize() called on a closed file");
+        utility::LogThrowError("CFile::GetFileSize() called on a closed file");
     }
     fpos_t prevpos;
     if (fgetpos(file_, &prevpos)) {
         error_code_ = errno;
-        utility::LogError("fgetpos failed: {}", GetError());
+        utility::LogThrowError("fgetpos failed: {}", GetError());
     }
     if (fseek(file_, 0, SEEK_END)) {
         error_code_ = errno;
-        utility::LogError("fseek failed: {}", GetError());
+        utility::LogThrowError("fseek failed: {}", GetError());
     }
     int64_t size = CurPos();
     if (fsetpos(file_, &prevpos)) {
         error_code_ = errno;
-        utility::LogError("fsetpos failed: {}", GetError());
+        utility::LogThrowError("fsetpos failed: {}", GetError());
     }
     return size;
 }
 
 const char *CFile::ReadLine() {
     if (!file_) {
-        utility::LogError("CFile::ReadLine() called on a closed file");
+        utility::LogThrowError("CFile::ReadLine() called on a closed file");
     }
     if (line_buffer_.size() == 0) {
         line_buffer_.resize(DEFAULT_IO_BUFFER_SIZE);
     }
     if (!fgets(line_buffer_.data(), int(line_buffer_.size()), file_)) {
         if (ferror(file_)) {
-            utility::LogError("CFile::ReadLine() ferror encountered");
+            utility::LogThrowError("CFile::ReadLine() ferror encountered");
         }
         if (!feof(file_)) {
-            utility::LogError(
+            utility::LogThrowError(
                     "CFile::ReadLine() fgets returned NULL, ferror is not set, "
                     "feof is not set");
         }
@@ -481,23 +481,24 @@ const char *CFile::ReadLine() {
     if (strlen(line_buffer_.data()) == line_buffer_.size() - 1) {
         // if we didn't read the whole line, chances are code using this is
         // not equipped to handle partial line on next call
-        utility::LogError("CFile::ReadLine() encountered a line longer than {}",
-                          line_buffer_.size() - 2);
+        utility::LogThrowError(
+                "CFile::ReadLine() encountered a line longer than {}",
+                line_buffer_.size() - 2);
     }
     return line_buffer_.data();
 }
 
 size_t CFile::ReadData(void *data, size_t elem_size, size_t num_elems) {
     if (!file_) {
-        utility::LogError("CFile::ReadData() called on a closed file");
+        utility::LogThrowError("CFile::ReadData() called on a closed file");
     }
     size_t elems = fread(data, elem_size, num_elems, file_);
     if (ferror(file_)) {
-        utility::LogError("CFile::ReadData() ferror encountered");
+        utility::LogThrowError("CFile::ReadData() ferror encountered");
     }
     if (elems < num_elems) {
         if (!feof(file_)) {
-            utility::LogError(
+            utility::LogThrowError(
                     "CFile::ReadData() fread short read, ferror not set, feof "
                     "not set");
         }
