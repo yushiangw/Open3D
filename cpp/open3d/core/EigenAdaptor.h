@@ -32,8 +32,8 @@
 namespace open3d {
 namespace core {
 
-template <class T, int M, int N, int A>
-Tensor FromEigen(const Eigen::Matrix<T, M, N, A>& matrix) {
+template <class T, int M, int N>
+Tensor FromEigen(const Eigen::Matrix<T, M, N>& matrix) {
     Dtype dtype = DtypeUtil::FromType<T>();
     Eigen::Matrix<T, M, N, Eigen::RowMajor> matrix_row_major = matrix;
     return Tensor(matrix_row_major.data(), {matrix.rows(), matrix.cols()},
