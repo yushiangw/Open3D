@@ -63,7 +63,7 @@ Dtype::Dtype(DtypeCode dtype_code, int64_t byte_size, const std::string &name)
 
 bool Dtype::operator==(const Dtype &other) const {
     return dtype_code_ == other.dtype_code_ && byte_size_ == other.byte_size_ &&
-           name_ == other.name_;
+           std::strcmp(name_, other.name_) == 0;
 }
 
 bool Dtype::operator!=(const Dtype &other) const { return !(*this == other); }
