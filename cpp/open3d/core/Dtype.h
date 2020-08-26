@@ -26,15 +26,17 @@
 
 #pragma once
 
+#include <cstring>
 #include <string>
 
+#include "open3d/Macro.h"
 #include "open3d/core/Dispatch.h"
 #include "open3d/utility/Console.h"
 
 namespace open3d {
 namespace core {
 
-class Dtype {
+class OPEN3D_API Dtype {
 public:
     static const Dtype Undefined;
     static const Dtype Float32;
@@ -57,11 +59,15 @@ public:
 
     Dtype() : Dtype(DtypeCode::Undefined, 1, "Undefined") {}
 
-    Dtype(DtypeCode dtype_code, int64_t byte_size, const std::string name)
-        : dtype_code_(dtype_code), byte_size_(byte_size), name_(name) {
+    Dtype(DtypeCode dtype_code, int64_t byte_size, const std::string &name)
+        : dtype_code_(dtype_code), byte_size_(byte_size) {
         (void)dtype_code_;
         (void)byte_size_;
-        (void)name_;
+        if (name.size() > 15) {
+            utility::LogError("Name {} must be shorter.", name);
+        } else {
+            strcpy_s(name_, 16, name.c_str());
+        }
     }
 
     /// Convert from C++ types to Dtype. Known types are explicitly specialized,
@@ -86,7 +92,7 @@ public:
 private:
     DtypeCode dtype_code_;
     int64_t byte_size_;
-    std::string name_;
+    char name_[16];  // Avoids MSVC warning on exporting std::string to DLL.
 };
 
 template <>

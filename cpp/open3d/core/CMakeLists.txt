@@ -86,4 +86,4 @@ open3d_show_and_abort_on_warning(core)
 
 if(BUILD_CUDA_MODULE)
     target_include_directories(core SYSTEM PRIVATE ${CMAKE_CUDA_TOOLKIT_INCLUDE_DIRECTORIES})
-  endif()
+endif()

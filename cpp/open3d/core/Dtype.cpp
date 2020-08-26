@@ -46,14 +46,14 @@ static_assert(sizeof(uint16_t) == 2,
 static_assert(sizeof(bool) == 1, "Unsupported platform: bool must be 1 byte.");
 
 // clang-format off
-const Dtype Dtype::Undefined = Dtype(Dtype::DtypeCode::Undefined, 1, "Undefined");
-const Dtype Dtype::Float32   = Dtype(Dtype::DtypeCode::Float,     4, "Float32"  );
-const Dtype Dtype::Float64   = Dtype(Dtype::DtypeCode::Float,     8, "Float64"  );
-const Dtype Dtype::Int32     = Dtype(Dtype::DtypeCode::Int,       4, "Int32"    );
-const Dtype Dtype::Int64     = Dtype(Dtype::DtypeCode::Int,       8, "Int64"    );
-const Dtype Dtype::UInt8     = Dtype(Dtype::DtypeCode::UInt,      1, "UInt8"    );
-const Dtype Dtype::UInt16    = Dtype(Dtype::DtypeCode::UInt,      2, "UInt16"   );
-const Dtype Dtype::Bool      = Dtype(Dtype::DtypeCode::Bool,      1, "Bool"     );
+const Dtype Dtype::Undefined(Dtype::DtypeCode::Undefined, 1, "Undefined");
+const Dtype Dtype::Float32  (Dtype::DtypeCode::Float,     4, "Float32"  );
+const Dtype Dtype::Float64  (Dtype::DtypeCode::Float,     8, "Float64"  );
+const Dtype Dtype::Int32    (Dtype::DtypeCode::Int,       4, "Int32"    );
+const Dtype Dtype::Int64    (Dtype::DtypeCode::Int,       8, "Int64"    );
+const Dtype Dtype::UInt8    (Dtype::DtypeCode::UInt,      1, "UInt8"    );
+const Dtype Dtype::UInt16   (Dtype::DtypeCode::UInt,      2, "UInt16"   );
+const Dtype Dtype::Bool     (Dtype::DtypeCode::Bool,      1, "Bool"     );
 // clang-format on
 
 }  // namespace core
