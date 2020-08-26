@@ -59,16 +59,7 @@ public:
 
     Dtype() : Dtype(DtypeCode::Undefined, 1, "Undefined") {}
 
-    Dtype(DtypeCode dtype_code, int64_t byte_size, const std::string &name)
-        : dtype_code_(dtype_code), byte_size_(byte_size) {
-        (void)dtype_code_;
-        (void)byte_size_;
-        if (name.size() > 15) {
-            utility::LogError("Name {} must be shorter.", name);
-        } else {
-            strcpy_s(name_, 16, name.c_str());
-        }
-    }
+    Dtype(DtypeCode dtype_code, int64_t byte_size, const std::string &name);
 
     /// Convert from C++ types to Dtype. Known types are explicitly specialized,
     /// e.g. FromType<float>(). Unsupported type results in an exception.
@@ -82,12 +73,9 @@ public:
 
     std::string ToString() const { return name_; }
 
-    bool operator==(const Dtype &other) const {
-        return dtype_code_ == other.dtype_code_ &&
-               byte_size_ == other.byte_size_ && name_ == other.name_;
-    }
+    bool operator==(const Dtype &other) const;
 
-    bool operator!=(const Dtype &other) const { return !(*this == other); }
+    bool operator!=(const Dtype &other) const;
 
 private:
     DtypeCode dtype_code_;

@@ -45,6 +45,24 @@ static_assert(sizeof(uint16_t) == 2,
               "Unsupported platform: uint16_t must be 2 bytes.");
 static_assert(sizeof(bool) == 1, "Unsupported platform: bool must be 1 byte.");
 
+Dtype::Dtype(DtypeCode dtype_code, int64_t byte_size, const std::string &name)
+    : dtype_code_(dtype_code), byte_size_(byte_size) {
+    (void)dtype_code_;
+    (void)byte_size_;
+    if (name.size() > 15) {
+        utility::LogError("Name {} must be shorter.", name);
+    } else {
+        std::strcpy(name_, name.c_str());
+    }
+}
+
+bool Dtype::operator==(const Dtype &other) const {
+    return dtype_code_ == other.dtype_code_ && byte_size_ == other.byte_size_ &&
+           name_ == other.name_;
+}
+
+bool Dtype::operator!=(const Dtype &other) const { return !(*this == other); }
+
 // clang-format off
 const Dtype Dtype::Undefined(Dtype::DtypeCode::Undefined, 1, "Undefined");
 const Dtype Dtype::Float32  (Dtype::DtypeCode::Float,     4, "Float32"  );
