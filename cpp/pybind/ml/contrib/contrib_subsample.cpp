@@ -297,9 +297,23 @@ const py::object Subsample(py::array points,
     }
 
     // Call function.
+    utility::LogInfo("Before");
+    utility::LogInfo("original_points:");
+    for (const auto& pt : original_points) {
+        utility::LogInfo("({}, {}, {})", pt.x, pt.y, pt.z);
+    }
     grid_subsampling(original_points, subsampled_points, original_features,
                      subsampled_features, original_classes, subsampled_classes,
                      sampleDl, verbose);
+    utility::LogInfo("After");
+    utility::LogInfo("original_points:");
+    for (const auto& pt : original_points) {
+        utility::LogInfo("({}, {}, {})", pt.x, pt.y, pt.z);
+    }
+    utility::LogInfo("subsampled_points:");
+    for (const auto& pt : subsampled_points) {
+        utility::LogInfo("({}, {}, {})", pt.x, pt.y, pt.z);
+    }
 
     // Wrap result subsampled_points. Data will be copied.
     assert(std::is_pod<PointXYZ>());
