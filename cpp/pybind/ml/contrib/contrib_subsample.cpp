@@ -311,6 +311,8 @@ const py::object Subsample(py::array points,
     if (verbose) {
         utility::LogInfo("Subsampled to {} points.", num_subsampled_points);
     }
+    utility::LogInfo("subsampled_points_t:\n{}",
+                     subsampled_points_t.ToString());
 
     // Wrap result subsampled_features. Data will be copied.
     core::Tensor subsampled_features_t;

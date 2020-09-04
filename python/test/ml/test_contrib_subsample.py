@@ -3,6 +3,24 @@ import pytest
 from open3d.ml.contrib import subsample, subsample_batch
 
 
+def test_one():
+    points = np.array([[0, 0, 0], [1, 0, 0], [0, 1, 0], [0, 0, 1], [1, 1, 1],
+                       [5, 0, 0], [5, 1, 0]],
+                      dtype=np.float32)
+    features = np.array(range(21), dtype=np.float32).reshape(-1, 3)
+    labels = np.array(range(7), dtype=np.int32)
+
+    # Reference results.
+    sub_points_ref = np.array([[5, 0.5, 0], [0.4, 0.4, 0.4]], dtype=np.float32)
+
+    # Passing only points.
+    sub_points = subsample(points, sampleDl=1.1)
+    print()
+    print(sub_points)
+    print(sub_points_ref)
+    np.testing.assert_equal(sub_points, sub_points_ref)
+
+
 def test_subsample():
     points = np.array([[0, 0, 0], [1, 0, 0], [0, 1, 0], [0, 0, 1], [1, 1, 1],
                        [5, 0, 0], [5, 1, 0]],
