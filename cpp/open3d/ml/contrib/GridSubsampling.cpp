@@ -109,22 +109,26 @@ void grid_subsampling(std::vector<PointXYZ>& original_points,
     subsampled_points.reserve(data.size());
     if (use_feature) subsampled_features.reserve(data.size() * fdim);
     if (use_classes) subsampled_classes.reserve(data.size() * ldim);
-    for (auto& v : data) {
-        subsampled_points.push_back(v.second.point * (1.0f / v.second.count));
+
+    std::map<size_t, size_t> ordered_indices(data.begin(), data.end());
+    for (auto& it : ordered_indices) {
+        size_t key = it.second;
+        const auto& value = data.at(key);
+        subsampled_points.push_back(value.point * (1.0f / value.count));
         if (use_feature) {
-            float count = (float)v.second.count;
-            transform(v.second.features.begin(), v.second.features.end(),
-                      v.second.features.begin(),
+            float count = (float)value.count;
+            transform(value.features.begin(), value.features.end(),
+                      value.features.begin(),
                       [count](float f) { return f / count; });
             subsampled_features.insert(subsampled_features.end(),
-                                       v.second.features.begin(),
-                                       v.second.features.end());
+                                       value.features.begin(),
+                                       value.features.end());
         }
         if (use_classes) {
             for (int i = 0; i < static_cast<int>(ldim); i++)
                 subsampled_classes.push_back(
-                        max_element(v.second.labels[i].begin(),
-                                    v.second.labels[i].end(),
+                        max_element(value.labels[i].begin(),
+                                    value.labels[i].end(),
                                     [](const std::pair<int, int>& a,
                                        const std::pair<int, int>& b) {
                                         return a.second < b.second;
@@ -132,6 +136,30 @@ void grid_subsampling(std::vector<PointXYZ>& original_points,
                                 ->first);
         }
     }
+
+    // for (auto& v : data) {
+    //     subsampled_points.push_back(v.second.point * (1.0f /
+    //     v.second.count)); if (use_feature) {
+    //         float count = (float)v.second.count;
+    //         transform(v.second.features.begin(), v.second.features.end(),
+    //                   v.second.features.begin(),
+    //                   [count](float f) { return f / count; });
+    //         subsampled_features.insert(subsampled_features.end(),
+    //                                    v.second.features.begin(),
+    //                                    v.second.features.end());
+    //     }
+    //     if (use_classes) {
+    //         for (int i = 0; i < static_cast<int>(ldim); i++)
+    //             subsampled_classes.push_back(
+    //                     max_element(v.second.labels[i].begin(),
+    //                                 v.second.labels[i].end(),
+    //                                 [](const std::pair<int, int>& a,
+    //                                    const std::pair<int, int>& b) {
+    //                                     return a.second < b.second;
+    //                                 })
+    //                             ->first);
+    //     }
+    // }
 
     return;
 }

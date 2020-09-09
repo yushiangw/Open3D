@@ -3,9 +3,11 @@ import pytest
 from open3d.ml.contrib import subsample, subsample_batch
 
 
-def assert_equal_2d_sort_by_row(x, y):
-    if x.ndim != 2 or y.ndim != 2:
-        raise ValueError("x and y must be 2-dimensional.")
+def assert_equal_1d_2d_sort_by_row(x, y):
+    if x.ndim != y.ndim:
+        raise ValueError("x.ndim != y.ndim.")
+    if x.ndim not in {1, 2}:
+        raise ValueError("x and y must be 1d or 2d.")
     x = np.sort(x, axis=0)
     y = np.sort(y, axis=0)
     np.testing.assert_equal(x, y)
@@ -23,7 +25,7 @@ def test_one():
 
     # Passing only points.
     sub_points = subsample(points, sampleDl=1.1)
-    assert_equal_2d_sort_by_row(sub_points, sub_points_ref)
+    assert_equal_1d_2d_sort_by_row(sub_points, sub_points_ref)
 
 
 def test_subsample():
@@ -41,23 +43,23 @@ def test_subsample():
 
     # Passing only points.
     sub_points = subsample(points, sampleDl=1.1)
-    np.testing.assert_equal(sub_points, sub_points_ref)
+    assert_equal_1d_2d_sort_by_row(sub_points, sub_points_ref)
 
     # Passing points and features.
     sub_points, sub_features = subsample(points,
                                          features=features,
                                          sampleDl=1.1)
-    np.testing.assert_equal(sub_points, sub_points_ref)
-    np.testing.assert_equal(sub_features, sub_features_ref)
+    assert_equal_1d_2d_sort_by_row(sub_points, sub_points_ref)
+    assert_equal_1d_2d_sort_by_row(sub_features, sub_features_ref)
 
     # Passing points, features and labels.
     sub_points, sub_features, sub_labels = subsample(points,
                                                      features=features,
                                                      classes=labels,
                                                      sampleDl=1.1)
-    np.testing.assert_equal(sub_points, sub_points_ref)
-    np.testing.assert_equal(sub_features, sub_features_ref)
-    np.testing.assert_equal(sub_labels, sub_labels_ref)
+    assert_equal_1d_2d_sort_by_row(sub_points, sub_points_ref)
+    assert_equal_1d_2d_sort_by_row(sub_features, sub_features_ref)
+    assert_equal_1d_2d_sort_by_row(sub_labels, sub_labels_ref)
 
     # Test wrong dtype.
     with pytest.raises(RuntimeError):
