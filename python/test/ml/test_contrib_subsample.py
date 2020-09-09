@@ -3,6 +3,14 @@ import pytest
 from open3d.ml.contrib import subsample, subsample_batch
 
 
+def assert_equal_2d_sort_by_row(x, y):
+    if x.ndim != 2 or y.ndim != 2:
+        raise ValueError("x and y must be 2-dimensional.")
+    x = np.sort(x, axis=0)
+    y = np.sort(y, axis=0)
+    np.testing.assert_equal(x, y)
+
+
 def test_one():
     points = np.array([[0, 0, 0], [1, 0, 0], [0, 1, 0], [0, 0, 1], [1, 1, 1],
                        [5, 0, 0], [5, 1, 0]],
@@ -15,10 +23,7 @@ def test_one():
 
     # Passing only points.
     sub_points = subsample(points, sampleDl=1.1)
-    print()
-    print(sub_points)
-    print(sub_points_ref)
-    np.testing.assert_equal(sub_points, sub_points_ref)
+    assert_equal_2d_sort_by_row(sub_points, sub_points_ref)
 
 
 def test_subsample():
