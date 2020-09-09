@@ -110,10 +110,14 @@ void grid_subsampling(std::vector<PointXYZ>& original_points,
     if (use_feature) subsampled_features.reserve(data.size() * fdim);
     if (use_classes) subsampled_classes.reserve(data.size() * ldim);
 
-    std::map<size_t, size_t> ordered_indices(data.begin(), data.end());
-    for (auto& it : ordered_indices) {
-        size_t key = it.second;
-        const auto& value = data.at(key);
+    std::vector<size_t> ordered_keys;
+    ordered_keys.reserve(data.size());
+    for (const auto& it : data) {
+        ordered_keys.push_back(it.first);
+    }
+    std::sort(ordered_keys.begin(), ordered_keys.end());
+    for (size_t& key : ordered_keys) {
+        auto& value = data.at(key);
         subsampled_points.push_back(value.point * (1.0f / value.count));
         if (use_feature) {
             float count = (float)value.count;
