@@ -140,6 +140,7 @@ message(STATUS "Open3D ${PROJECT_VERSION}")
 
 # Detect process or architecture.
 # Ref: https://stackoverflow.com/a/12024211/1255535
+# Only supporting ARMV8+ 64-bit for now.
 set(detect_arch_code "
 #if defined(__x86_64) || defined(__x86_64__) || defined(__amd64) || \
         defined(_M_X64)
@@ -147,10 +148,6 @@ set(detect_arch_code "
 #elif defined(__ARMv8_A__) || defined(__ARM64_ARCH_8__) || \
         defined(__aarch64__) || defined(__ARMv8__) || defined(_M_ARM64)
 #define PROCESSOR_ARCH \"armv8\"
-#elif defined(__ARM_ARCH_7__) || defined(__ARM_ARCH_7A__) ||    \
-        defined(__ARM_ARCH_7R__) || defined(__ARM_ARCH_7M__) || \
-        defined(__ARM_ARCH_7EM__)
-#define PROCESSOR_ARCH \"armv7\"
 #else
 #define PROCESSOR_ARCH \"unknown\"
 #endif
@@ -176,14 +173,14 @@ else()
 endif()
 
 # Set BLAS/LAPACK library preference.
-if(("${PROCESSOR_ARCH}" STREQUAL "armv8") OR (${PROCESSOR_ARCH} STREQUAL "armv7"))
+if("${PROCESSOR_ARCH}" STREQUAL "armv8")
     if(NOT USE_BLAS)
         set(USE_BLAS ON)
         message(WARNING "ARM CPU detected, setting USE_BLAS=ON.")
     endif()
-    if(BUILD_GUI)
-        set(BUILD_GUI OFF)
-        message(WARNING "ARM CPU detected, setting BUILD_GUI=OFF.")
+    if(BUILD_GUI AND (NOT BUILD_FILAMENT_FROM_SOURCE))
+        set(BUILD_FILAMENT_FROM_SOURCE ON)
+        message(WARNING "ARM CPU detected, setting BUILD_FILAMENT_FROM_SOURCE=ON.")
     endif()
 endif()
 

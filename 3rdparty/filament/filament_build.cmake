@@ -2,11 +2,19 @@ include(ExternalProject)
 
 set(FILAMENT_ROOT "${CMAKE_BINARY_DIR}/filament-binaries")
 
+if("${PROCESSOR_ARCH}" STREQUAL "armv8")
+    set(FILAMENT_GIT_REPOSITORY "https://github.com/yxlao/filament.git")
+    set(FILAMENT_GIT_TAG "aarch64")
+else()
+    set(FILAMENT_GIT_REPOSITORY "https://github.com/google/filament.git")
+    set(FILAMENT_GIT_TAG "v1.8.1")
+endif()
+
 ExternalProject_Add(
     ext_filament
     PREFIX filament
-    GIT_REPOSITORY https://github.com/google/filament.git
-    GIT_TAG v1.8.1
+    GIT_REPOSITORY ${FILAMENT_GIT_REPOSITORY}
+    GIT_TAG ${FILAMENT_GIT_TAG}
     UPDATE_COMMAND ""
     CMAKE_ARGS
         -DCMAKE_BUILD_TYPE=Release
