@@ -24,26 +24,23 @@
 // IN THE SOFTWARE.
 // ----------------------------------------------------------------------------
 
-#include "open3d/ml/contrib/contrib_nns.h"
+#pragma once
 
-#include "pybind/core/core.h"
-#include "pybind/docstring.h"
-#include "pybind/ml/contrib/contrib.h"
-#include "pybind/open3d_pybind.h"
-#include "pybind/pybind_utils.h"
+#include "open3d/core/hashmap/CPU/HashmapCPU.h"
 
 namespace open3d {
-namespace ml {
-namespace contrib {
+namespace core {
 
-void pybind_contrib_nns(py::module& m_contrib) {
-    m_contrib.def("knn_search", &KnnSearch, "query_points"_a,
-                  "dataset_points"_a, "knn"_a);
-    m_contrib.def("radius_search", &RadiusSearch, "query_points"_a,
-                  "dataset_points"_a, "query_batches"_a, "dataset_batches"_a,
-                  "radius"_a);
+/// Templated factory.
+template <typename Hash, typename KeyEq>
+std::shared_ptr<CPUHashmap<Hash, KeyEq>> CreateTemplateCPUHashmap(
+        size_t init_buckets,
+        size_t init_capacity,
+        size_t dsize_key,
+        size_t dsize_value,
+        const Device& device) {
+    return std::make_shared<CPUHashmap<Hash, KeyEq>>(
+            init_buckets, init_capacity, dsize_key, dsize_value, device);
 }
-
-}  // namespace contrib
-}  // namespace ml
+}  // namespace core
 }  // namespace open3d

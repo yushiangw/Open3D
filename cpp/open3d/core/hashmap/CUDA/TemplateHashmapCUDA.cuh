@@ -24,26 +24,39 @@
 // IN THE SOFTWARE.
 // ----------------------------------------------------------------------------
 
-#include "open3d/ml/contrib/contrib_nns.h"
+// Copyright 2019 Saman Ashkiani
+// Rewritten by Wei Dong 2019 - 2020
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+// http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
+// implied. See the License for the specific language governing permissions
+// and limitations under the License.
 
-#include "pybind/core/core.h"
-#include "pybind/docstring.h"
-#include "pybind/ml/contrib/contrib.h"
-#include "pybind/open3d_pybind.h"
-#include "pybind/pybind_utils.h"
+#pragma once
+
+#include "open3d/core/hashmap/CUDA/HashmapCUDA.h"
+#include "open3d/core/hashmap/CUDA/HashmapCUDAImpl.cuh"
 
 namespace open3d {
-namespace ml {
-namespace contrib {
+namespace core {
 
-void pybind_contrib_nns(py::module& m_contrib) {
-    m_contrib.def("knn_search", &KnnSearch, "query_points"_a,
-                  "dataset_points"_a, "knn"_a);
-    m_contrib.def("radius_search", &RadiusSearch, "query_points"_a,
-                  "dataset_points"_a, "query_batches"_a, "dataset_batches"_a,
-                  "radius"_a);
+/// Templated factory.
+template <typename Hash, typename KeyEq>
+std::shared_ptr<CUDAHashmap<Hash, KeyEq>> CreateTemplateCUDAHashmap(
+        size_t init_buckets,
+        size_t init_capacity,
+        size_t dsize_key,
+        size_t dsize_value,
+        const Device& device) {
+    return std::make_shared<CUDAHashmap<Hash, KeyEq>>(
+            init_buckets, init_capacity, dsize_key, dsize_value, device);
 }
 
-}  // namespace contrib
-}  // namespace ml
+}  // namespace core
 }  // namespace open3d

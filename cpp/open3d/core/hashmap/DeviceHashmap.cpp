@@ -24,26 +24,42 @@
 // IN THE SOFTWARE.
 // ----------------------------------------------------------------------------
 
-#include "open3d/ml/contrib/contrib_nns.h"
+// High level non-templated hashmap interface for basic usages.
+//
+// If BUILD_CUDA_MODULE, link DefaultHashmap.cu that contains everything, and
+// disable code inside DefaultHashmap.cpp
+// Else, link DefaultHashmap.cpp and disregard DefaultHashmap.cu
 
-#include "pybind/core/core.h"
-#include "pybind/docstring.h"
-#include "pybind/ml/contrib/contrib.h"
-#include "pybind/open3d_pybind.h"
-#include "pybind/pybind_utils.h"
+#include "open3d/core/hashmap/DeviceHashmap.h"
+
+#include <unordered_map>
+
+#include "open3d/utility/Console.h"
+#include "open3d/utility/Helper.h"
 
 namespace open3d {
-namespace ml {
-namespace contrib {
+namespace core {
 
-void pybind_contrib_nns(py::module& m_contrib) {
-    m_contrib.def("knn_search", &KnnSearch, "query_points"_a,
-                  "dataset_points"_a, "knn"_a);
-    m_contrib.def("radius_search", &RadiusSearch, "query_points"_a,
-                  "dataset_points"_a, "query_batches"_a, "dataset_batches"_a,
-                  "radius"_a);
+std::shared_ptr<DefaultDeviceHashmap> CreateDefaultDeviceHashmap(
+        size_t init_buckets,
+        size_t init_capacity,
+        size_t dsize_key,
+        size_t dsize_value,
+        const Device& device) {
+    if (device.GetType() == Device::DeviceType::CPU) {
+        return CreateDefaultCPUHashmap(init_buckets, init_capacity, dsize_key,
+                                       dsize_value, device);
+    }
+#if defined(BUILD_CUDA_MODULE)
+    else if (device.GetType() == Device::DeviceType::CUDA) {
+        return CreateDefaultCUDAHashmap(init_buckets, init_capacity, dsize_key,
+                                        dsize_value, device);
+    }
+#endif
+    else {
+        utility::LogError("[CreateDefaultDeviceHashmap]: Unimplemented device");
+    }
 }
 
-}  // namespace contrib
-}  // namespace ml
+}  // namespace core
 }  // namespace open3d

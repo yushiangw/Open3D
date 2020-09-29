@@ -24,26 +24,53 @@
 // IN THE SOFTWARE.
 // ----------------------------------------------------------------------------
 
-#include "open3d/ml/contrib/contrib_nns.h"
+// Copyright 2019 Saman Ashkiani
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+// http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
+// implied. See the License for the specific language governing permissions
+// and limitations under the License.
 
-#include "pybind/core/core.h"
-#include "pybind/docstring.h"
-#include "pybind/ml/contrib/contrib.h"
-#include "pybind/open3d_pybind.h"
-#include "pybind/pybind_utils.h"
+#pragma once
+#include <cstdint>
+
+#include "open3d/core/CUDAUtils.h"
 
 namespace open3d {
-namespace ml {
-namespace contrib {
+namespace core {
 
-void pybind_contrib_nns(py::module& m_contrib) {
-    m_contrib.def("knn_search", &KnnSearch, "query_points"_a,
-                  "dataset_points"_a, "knn"_a);
-    m_contrib.def("radius_search", &RadiusSearch, "query_points"_a,
-                  "dataset_points"_a, "query_batches"_a, "dataset_batches"_a,
-                  "radius"_a);
+typedef uint32_t addr_t;
+
+struct iterator_t {
+    OPEN3D_HOST_DEVICE iterator_t() : first(nullptr), second(nullptr) {}
+    OPEN3D_HOST_DEVICE iterator_t(void* key_ptr, void* value_ptr)
+        : first(key_ptr), second(value_ptr) {}
+
+    void* first;
+    void* second;
+};
+
+template <typename First, typename Second>
+struct Pair {
+    First first;
+    Second second;
+    OPEN3D_HOST_DEVICE Pair() {}
+    OPEN3D_HOST_DEVICE Pair(const First& _first, const Second& _second)
+        : first(_first), second(_second) {}
+};
+
+template <typename First, typename Second>
+OPEN3D_HOST_DEVICE Pair<First, Second> make_pair(const First& _first,
+                                                 const Second& _second) {
+    return Pair<First, Second>(_first, _second);
 }
 
-}  // namespace contrib
-}  // namespace ml
+}  // namespace core
 }  // namespace open3d
