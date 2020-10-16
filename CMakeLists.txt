@@ -153,7 +153,7 @@ string(CONCAT OPEN3D_VERSION
     ".${OPEN3D_VERSION_MINOR}"
     ".${OPEN3D_VERSION_PATCH}"
 )
-set(OPEN3D_VERSION_FULL "${OPEN3D_VERSION}${OPEN3D_VERSION_DEVHASH}")
+set(OPEN3D_VERSION_FULL "${OPEN3D_VERSION}") # Temp workardound for generating Windows release wheels
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/docs/Doxyfile.in
     ${CMAKE_CURRENT_SOURCE_DIR}/docs/Doxyfile @ONLY)
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/docs/getting_started.rst.in
