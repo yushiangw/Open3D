@@ -76,10 +76,6 @@ set(CORE_NNS_SRC
     nns/NearestNeighborSearch.cpp
 )
 
-if (NOT WIN32)
-    list(APPEND CORE_NNS_SRC nns/FaissIndex.cpp)
-endif()
-
 if(BUILD_CUDA_MODULE)
     set(ALL_CORE_SRC
         ${CORE_SRC}
