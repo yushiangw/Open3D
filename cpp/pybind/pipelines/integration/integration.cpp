@@ -203,7 +203,12 @@ In SIGGRAPH, 2013)");
             .def("extract_voxel_point_cloud",
                  &ScalableTSDFVolume::ExtractVoxelPointCloud,
                  "Debug function to extract the voxel data into a point "
-                 "cloud.");
+                 "cloud.")
+
+            .def_readwrite("_weight_th", &ScalableTSDFVolume::_weight_th,
+                           "weight threshold using in exatrction mesh ") ;
+
+            
     docstring::ClassMethodDocInject(m, "ScalableTSDFVolume",
                                     "extract_voxel_point_cloud");
 }

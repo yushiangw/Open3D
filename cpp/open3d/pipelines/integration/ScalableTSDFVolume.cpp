@@ -45,7 +45,11 @@ ScalableTSDFVolume::ScalableTSDFVolume(double voxel_length,
     : TSDFVolume(voxel_length, sdf_trunc, color_type),
       volume_unit_resolution_(volume_unit_resolution),
       volume_unit_length_(voxel_length * volume_unit_resolution),
-      depth_sampling_stride_(depth_sampling_stride) {}
+      depth_sampling_stride_(depth_sampling_stride) {
+
+        _weight_th=0;
+
+      }
 
 ScalableTSDFVolume::~ScalableTSDFVolume() {}
 
@@ -298,7 +302,12 @@ ScalableTSDFVolume::ExtractTriangleMesh() {
                                                        .color_.cast<double>();
                                 }
                             }
-                            if (w[i] == 0.0f) {
+                            
+                            // if (w[i] == 0.0f) {
+                            //     cube_index = 0;
+                            //     break;
+                            // }
+                            if (w[i] <= _weight_th ) {
                                 cube_index = 0;
                                 break;
                             } else {
