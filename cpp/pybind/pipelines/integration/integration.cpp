@@ -205,7 +205,7 @@ In SIGGRAPH, 2013)");
                  "Debug function to extract the voxel data into a point "
                  "cloud.")
 
-            .def_readwrite("_weight_th", &ScalableTSDFVolume::_weight_th,
+            .def_readwrite("weight_th_", &ScalableTSDFVolume::weight_th_,
                            "weight threshold using in exatrction mesh ") ;
 
             

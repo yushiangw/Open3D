@@ -90,7 +90,7 @@ public:
     double volume_unit_length_;
     int depth_sampling_stride_;
 
-    int _weight_th;
+    int weight_th_;
 
     /// Assume the index of the volume unit is (x, y, z), then the unit spans
     /// from (x, y, z) * volume_unit_length_
